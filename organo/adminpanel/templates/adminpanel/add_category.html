@@ -1,0 +1,14 @@
+{% extends 'adminpanel/admin_base.html' %}
+
+{% block content %}
+
+<div class="container">
+  <h2>Add Category</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Add Category</button>
+  </form>
+</div>
+
+{% endblock content %}

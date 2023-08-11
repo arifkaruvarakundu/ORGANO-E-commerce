@@ -1,0 +1,73 @@
+{% extends 'cart/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid" style="margin-top: 30px; margin-bottom: 20px;">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body" style="background-color:#7FAD39;">
+                <h5 class="cat-list-title fw-semibold mb-4 text-center" style="color: white;">Wishlist</h5>
+                <hr>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                
+                                <th scope="col" class="text-center " style="color: white;">Name</th>
+                                <th scope="col" class="text-center" style="color: white;"></th>
+                                <th scope="col" class="text-center" style="color: white;">price</th>
+                                <th scope="col" class="text-center" style="color: white;">Image</th>
+                                <th scope="col" class="text-center" style="color: white;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if items %}
+                                {% for product in items %}
+                                <tr>
+                                    <td class="text-center p-4" style="color: white;">{{ product.product.title }}</td>
+                                    <td class="text-center p-4" style="color: white;"></td>
+                                    <td class="text-center p-4" style="color: white;">Rs:{{ product.product.price }}</td>
+                        
+                                    <td class="text-center align-middle p-1" style="width: 90px;">
+                                        <img src="{{ product.product.images.first.image.url }}" alt="{{ product.product.title }}" class="img-fluid rounded" style="max-height: 90px;">
+                                    </td>
+                        
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center">
+                                            {% if product.product.stock > 0 %}
+                                                <div class="mb-2 p-4">
+                                                    <a href="{% url 'remove_wish' product.product.id %}" class="btn btn-danger btn-sm">Remove</a>
+                                                </div>
+                                                {% if product.product.id in user_products %}
+                                                    <div class="mb-2 p-4">
+                                                        <a href="{% url 'view_cart' %}" class="btn btn-success btn-sm" style="color: white;">Added to Cart</a>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="mb-2 p-4">
+                                                        <a href="{% url 'add_to_cart' product.product.id %}" class="btn btn-success btn-sm" style="color: white;">Add to Cart</a>
+                                                    </div>
+                                                {% endif %}
+                                            {% else %}
+                                                <div class="mb-2 p-4">
+                                                    <span class="text-danger">Out of Stock</span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center p-4" style="color: white;">Your wishlist is empty.</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

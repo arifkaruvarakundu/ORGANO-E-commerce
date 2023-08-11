@@ -1,0 +1,98 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %} 
+{% block content %}
+
+<div class="container-fluid d-flex gap-4" style="background-color: #EDF1F5;">
+    <section class="gradient-custom container vh-100">
+        <div class="container py-5 h-100 row justify-content-center align-items-center">
+            <div class="col-12 col-lg-9 col-xl-8">
+                <div class="card shadow-2-strong card-registration">
+                    <div class="card-body shadow" style="border-radius: 5px;">
+                        {% if success_message %}
+                           <div class="alert alert-success mb-4" role="alert">
+                              {{ success_message }}
+                           </div>
+                        {% endif %}
+
+                        <form action="{% url 'add_product' %}" method="post" class="d-flex flex-column align-items-center mt-2" id="form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="active" value="{{ is_active }}">
+
+                            <div class="mb-3">
+                                <div class="fw-bold text-center fs-6 text-uppercase mb-1">Product Information</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="productName">Product Name</label>
+                                    <input type="text" id="name" name="name" style="box-shadow: none;" class="form-control form-control-sm" required/>
+                                </div>
+
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="category">Category</label>
+                                    <select class="form-select form-select-sm input-sm shadow-none" name="category">
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <!-- <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="category">Quality</label>
+                                    <select class="form-select form-select-sm input-sm shadow-none" name="category">
+                                        {% for quality in qualities %}
+                                            <option value="{{ quality.id }}">{{ quality.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div> -->
+                                
+
+                                <!-- <div class="row">
+                                    <div class="col-6">
+                                        <div class="form-outline mb-1">
+                                            <label class="form-label" style="font-size: .75rem;" for="price">Price</label>
+                                            <input type="text" id="price" name="price" style="box-shadow: none;" placeholder="00.00" class="form-control form-control-sm" pattern="^\d+\.\d{2}$" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="form-outline mb-1">
+                                            <label class="form-label" style="font-size: .75rem;" for="quantity">Quantity</label>
+                                            <input type="number" min="0" id="quantity" name="quantity" style="box-shadow: none;" class="form-control form-control-sm" required/>
+                                        </div>
+                                    </div>
+                                </div>  -->
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                <!-- <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="blurb">Blurb</label>
+                                    <textarea class="form-control form-control-sm" id="blurb" name="blurb" style="box-shadow: none;" rows="2" required></textarea>
+                                </div> -->
+                                
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="description">Description</label>
+                                    <textarea class="form-control form-control-sm" id="description" name="description" style="box-shadow: none;" rows="4" required></textarea>
+                                </div>
+                                
+                                <!-- <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="image">Image</label>
+                                    <input class="form-control form-control-sm" name="image" style="box-shadow: none;" type="file" id="formFileMultiple" multiple required>
+                                </div> -->
+                            </div>
+
+                            <div id="error-field" class="text-danger fs-6"></div>
+
+                            <button type="submit" style="background-color: #7FAD39;color: #fff;width: 150px;" class="btn btn-sm fw-normal p-10 mb-3 mt-3">Create Product</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock content %}

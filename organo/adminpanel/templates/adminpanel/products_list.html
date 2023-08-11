@@ -1,0 +1,53 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %} 
+
+{% block content %}
+{% if messages %}
+    <div id="messages" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ffffff; color: #ff0000; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(function() {
+            var messagesDiv = document.getElementById('messages');
+            messagesDiv.style.display = 'none';
+        }, 5000);
+    </script>
+{% endif %}
+
+<div class="container-fluid mt-4">
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Sl. No</th>
+                    
+                    <th scope="col">Name</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Edit</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.category }}</td>
+                    <td><a href="{% url 'edit_product' product.pk %}" class="btn btn-sm btn-success">Edit</a></td>
+                    {% if product.is_active %}
+                        <td><a href="{% url 'disable_product' product.id %}" class="btn btn-sm btn-danger">Disable</a></td>
+                    {% else %}
+                        <td><a href="{% url 'enable_product' product.id %}" class="btn btn-sm btn-success">Enable</a></td>
+                    {% endif %}
+                    <td><a href="{% url 'product_view' product.id %}" class="btn btn-sm btn-info">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

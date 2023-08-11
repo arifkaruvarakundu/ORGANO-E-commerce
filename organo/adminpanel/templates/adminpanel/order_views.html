@@ -1,0 +1,48 @@
+{% extends 'adminpanel/admin_base.html' %}
+{%load static %}
+{% block title%}
+Order views
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h5>Order Details</h5>
+        <span><code></code> </span>
+        <div class="card-header-right">    <ul class="list-unstyled card-option">        <li><i class="icofont icofont-simple-left "></i></li>        <li><i class="icofont icofont-maximize full-card"></i></li>        <li><i class="icofont icofont-minus minimize-card"></i></li>        <li><i class="icofont icofont-refresh reload-card"></i></li>        <li><i class="icofont icofont-error close-card"></i></li>    </ul></div>
+    </div>
+    <div class="card-block table-border-style">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                      
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orderss in order  %}
+                    <tr>
+                        <td><img style="width:150px;height:160px;" src="{{MEDIA_URL}}{{ product.image.url}}" alt="{{product.name}}"></td>
+
+                        <th scope="row">{{orderss.product.name}}</th>
+                        <td>{{orderss.price}}</td>
+                        <td>{{orderss.quantity}}</td>
+                       
+                       
+                    </tr>
+                    {% endfor %}
+                  
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+</div>
+  
+  {% endblock  %}
+  
+

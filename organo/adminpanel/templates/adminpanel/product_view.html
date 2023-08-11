@@ -1,0 +1,58 @@
+{% extends "adminpanel/admin_base.html" %}
+{% load static %}
+{% block content %}
+<div class="col-sm-12">
+    <div class="bg-white rounded h-100 p-4">
+        <div class="d-flex justify-content-between mx-5 my-1 ml">
+            <div>
+                <h5 class="mb-4">Variants</h5>
+            </div>
+            <hr class="text-dark d-none d-sm-block my-3" />
+            <div class="ml-5 pl-5">
+                <a href="{% url 'add_variant' product.id %}" class="btn btn-sm btn-primary rounded-pill">+ Add Variant</a>
+            </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">No</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Quality</th>
+                    <th scope="col">Stock</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for variant in variants %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    {% if variant.images.all %}
+                        {% with product_image=variant.images.first %}
+                            <td><img src="{{ product_image.image.url }}" alt="" width="30" height="40"></td>
+                        {% endwith %}  
+                    {% endif %}                
+                    <td>{{ variant.id }}</td>
+                    <td>{{ variant.title }}</td>
+                    <td>{{ variant.quantity }}</td>
+                    <td>{{ variant.quality.name }}</td>
+                    <td>{{ variant.stock }}</td>
+                    <td>{{ variant.price }}</td>
+                    <td>
+                        <a href="{% url 'variant_edit' variant.id %}" class="btn btn-outline-info m-1">Edit</a>
+                        {% if variant.is_active %}
+                        <a href="" class="btn btn-outline-danger m-1">Disable</a>
+                        {% else %}
+                        <a href="" class="btn btn-outline-success m-1">Enable</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,58 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Add Coupon</h1>
+    <form method="post" action="{% url 'add_coupon' %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="code" class="form-label">Coupon Code:</label>
+            <input type="text" id="coupon_code" name="coupon_code" class="form-control" maxlength="50" required>
+        </div>
+
+        <!-- Add the rest of the form fields for adding a new coupon here -->
+        <div class="mb-3">
+            <label for="discount" class="form-label">Discount price:</label>
+            <input type="number" id="discount_price" name="discount_price" step="0.01" class="form-control" required>
+        </div>
+
+        <!-- <div class="mb-3">
+            <label for="valid_from" class="form-label">Valid From:</label>
+            <input type="datetime-local" id="valid_from" name="valid_from" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="valid_to" class="form-label">Valid To:</label>
+            <input type="datetime-local" id="valid_to" name="valid_to" class="form-control" required>
+        </div> -->
+
+        <div class="mb-3">
+            <label for="minimum_order_amount" class="form-label">Minimum Order Amount:</label>
+            <input type="number" id="minimum_amount" name="minimum_amount" step="0.01" class="form-control">
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="is_expired" name="is_expired">
+            <label class="form-check-label" for="is_expired">Is expired:</label>
+        </div>
+
+        <!-- <div class="mb-3 form-check">
+            <input type="checkbox" class="form-check-input" id="single_use_per_user" name="single_use_per_user">
+            <label class="form-check-label" for="single_use_per_user">Single Use Per User:</label>
+        </div> -->
+
+        <!-- <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity:</label>
+            <input type="number" id="quantity" name="quantity" class="form-control" required>
+        </div> -->
+
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div>
+
+
+
+
+{% endblock %}

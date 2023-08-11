@@ -1,0 +1,52 @@
+
+{% extends 'order/base.html' %}
+
+{% block title %}
+order success
+{% endblock  %}
+
+{% block content %}
+{% load static %}
+
+
+<style>
+  .order-success-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 40px;
+    text-align: center;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-success-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .order-success-message {
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+
+  .order-success-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+  }
+</style>
+</head>
+<body>
+<div class="order-success-container">
+  <h1 class="order-success-title">Order Placed Successfully!</h1>
+  <p class="order-success-message">Thank you for your order. We have received your payment and will process your order shortly.</p>
+  <a href="{% url 'shop' %}" class="order-success-button">Continue Shopping</a>
+</div>
+</body>
+</html>
+{% endblock %}

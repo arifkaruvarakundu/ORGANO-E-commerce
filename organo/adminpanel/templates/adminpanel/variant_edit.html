@@ -1,0 +1,121 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %} 
+{% block content %}
+
+<div class="container-fluid d-flex gap-4" style="background-color: #EDF1F5;">
+    <section class="gradient-custom container vh-100">
+        <div class="container py-5 h-100 row justify-content-center align-items-center">
+            <div class="col-12 col-lg-9 col-xl-8">
+                <div class="card shadow-2-strong card-registration">
+                    <div class="card-body shadow" style="border-radius: 5px;">
+                        {% if success_message %}
+                            <div class="alert alert-success mb-4" role="alert">
+                                {{ success_message }}
+                            </div>
+                        {% endif %}
+
+                        <form action="{% url 'variant_edit' variant.id %}" method="post" class="d-flex flex-column align-items-center mt-2" id="form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="active" value="{{ is_active }}">
+
+                            <div class="mb-3">
+                                <div class="fw-bold text-center fs-6 text-uppercase mb-1">Variant Information</div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="variant_title">Variant Title</label>
+                                    <input type="text" id="variant_title" name="variant_title" style="box-shadow: none;" class="form-control form-control-sm" value="{{ variant.title }}" required/>
+                                </div>
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;">Existing Variant Image</label>
+                                    <div>
+                                        {% if variant.images.image %}
+                                            <img src="{{ variant.images.image.url }}" alt="Existing Variant Image" style="max-width: 150px; max-height: 150px;">
+                                        {% else %}
+                                            <p>No image available</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="image">Update Variant Image</label>
+                                    <input class="form-control form-control-sm" name="image" style="box-shadow: none;" type="file" id="formFileMultiple" multiple required>
+                                </div>
+
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="quality">Quality</label>
+                                    <select id="quality" name="quality" style="box-shadow: none;" class="form-control form-control-sm" required>
+                                        <option value="">Select a quality</option>
+                                        {% for quality in qualities %}
+                                            <option value="{{ quality.id }}" {% if variant.quality.id == quality.id %}selected{% endif %}>{{ quality.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" onclick="addCustomQuality()" style="margin-top: 5px;">Add Custom Quality</button>
+                                </div>
+
+                                <script>
+                                    function addCustomQuality() {
+                                        var qualitySelect = document.getElementById("quality");
+                                        var newQuality = prompt("Enter the new quality:");
+
+                                        if (newQuality !== null && newQuality.trim() !== "") {
+                                            // Check if the new quality already exists in the select options
+                                            var options = qualitySelect.options;
+                                            for (var i = 0; i < options.length; i++) {
+                                                if (options[i].value.toLowerCase() === newQuality.toLowerCase()) {
+                                                    alert("Quality already exists!");
+                                                    return;
+                                                }
+                                            }
+
+                                            var option = document.createElement("option");
+                                            option.text = newQuality;
+                                            option.value = newQuality;
+                                            qualitySelect.add(option);
+                                            option.selected = true;
+                                        }
+                                    }
+
+                                </script>
+
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="quantity">Quantity</label>
+                                    <input type="number" min="0" id="quantity" name="quantity" style="box-shadow: none;" class="form-control form-control-sm" value="{{ variant.quantity }}" required/>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-outline mb-1">
+                                            <label class="form-label" style="font-size: .75rem;" for="price">Price</label>
+                                            <input type="text" id="price" name="price" style="box-shadow: none;" placeholder="00.00" class="form-control form-control-sm" pattern="^\d+\.\d{2}$" value="{{ variant.price }}" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-outline mb-1">
+                                            <label class="form-label" style="font-size: .75rem;" for="stock">Stock</label>
+                                            <input type="number" min="0" id="stock" name="stock" style="box-shadow: none;" class="form-control form-control-sm" value="{{ variant.stock }}" required/>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-outline mb-1">
+                                    <label class="form-label" style="font-size: .75rem;" for="description">Description</label>
+                                    <textarea class="form-control form-control-sm" id="description" name="description" style="box-shadow: none;" rows="4" required>{{ variant.description }}</textarea>
+                                </div>
+
+                                <!-- Add more fields as needed for the variant -->
+                            </div>
+
+                            <div id="error-field" class="text-danger fs-6"></div>
+
+                            <button type="submit" style="background-color: #7FAD39;color: #fff;width: 150px;" class="btn btn-sm fw-normal p-10 mb-3 mt-3">Update Variant</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock content %}

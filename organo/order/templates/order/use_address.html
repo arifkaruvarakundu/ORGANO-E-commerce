@@ -1,0 +1,56 @@
+{% extends 'user/base.html' %}
+
+{% block title %}
+address
+{% endblock  %}
+
+{% block content %}
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+      <div class="row">
+        <div class="col">
+          <nav aria-label="breadcrumb" class="bg-light rounded-3 p-3 mb-4">
+            <ol class="breadcrumb mb-0">
+              <li class="breadcrumb-item"><a href="{%url 'home'%}">Home</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'profile_view'%}">Profile</a></li>
+              <li class="breadcrumb-item"><a href="{% url 'add_address'%}">Add address</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Addresses</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8 m-auto">
+      {% for user_add in addresses %}
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ user_add.first_name }} {{ user_add.last_name }}</h5>
+          <p class="card-text">{{ user_add.email }}</p>
+          <p class="card-text">
+            {{ user_add.address_line_1 }}<br>
+            {{ user_add.city }}, {{ user_add.state }},<br>
+            {{ user_add.country }}, {{ user_add.postal_code }}
+          </p>
+          <p class="card-text">Phone: {{ user_add.phone_number }}</p>
+        </div>
+        <div class="card-footer">
+          <div class="d-flex justify-content-end">
+            <a href="{% url 'edit_address' user_add.id %}" class="btn btn" style="background-color: #7FAD39;">Edit Address</a>
+            <form method="post" action="{% url 'delete_address' user_add.id %}" onsubmit="return confirm('Are you sure you want to delete this address?');">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger ml-2">Delete Address</button>
+            </form>
+            <a href="{% url 'checkout' %}" class="btn btn" style="background-color: #7FAD39;">Use Address</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+s

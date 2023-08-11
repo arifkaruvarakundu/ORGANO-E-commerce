@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Report</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom CSS */
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .sales-table {
+            margin-top: 30px;
+        }
+        /* Style top selling products list */
+        .top-products-list {
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .top-products-list li {
+            color: #007bff;
+        }
+        /* Style table */
+        .sales-table th, .sales-table td {
+            text-align: center;
+            padding: 10px;
+        }
+        .sales-table thead th {
+            background-color: #f2f2f2;
+        }
+        .sales-table tbody tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+        .sales-table tbody tr:hover {
+            background-color: #f7f7f7;
+        }
+        /* Additional styles */
+        .blue-table {
+            background-color: #e9f2fb;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .invoice-container {
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-left: 20px;
+        }
+        .blue-table th,
+        .blue-table td {
+            padding: 8px;
+            text-align: left;
+        }
+        .blue-table th {
+            background-color: #3572b0;
+            color: #fff;
+        }
+        .product-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+        .large-button {
+            padding: 12px 40px;
+            font-size: 16px;
+            background-color: #3572b0;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .long-button {
+            width: 100%;
+        }
+        .address-container {
+            background-color: #f8f8f8;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .address-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'download_order_pdf_sales' %}" class="large-button ">Download Report</a>
+        <h1>Sales Report</h1>
+        <!-- Sales Overview -->
+        <h2>Sales Overview:</h2>
+        <table class="table sales-table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Period</th>
+                    <th>Total Orders</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Today</td>
+                    <td>{{ order_count_today }}</td>
+                    <td>Rs : {{ total_price_today }}</td>
+                </tr>
+                <tr>
+                    <td>Weekly</td>
+                    <td>{{ order_count_week }}</td>
+                    <td>Rs : {{ total_price_week }}</td>
+                </tr>
+                <tr>
+                    <td>Monthly</td>
+                    <td>{{ order_count_month }}</td>
+                    <td>Rs : {{ total_price_month }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <!-- Top Selling Products -->
+        <h2>Top Selling Products</h2>
+        <table class="table blue-table">
+            <thead class="thead-light">
+                <tr>
+                    <th>Period</th>
+                    <th>Product Name</th>
+                    <th>Quantity Sold</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Today</td>
+                    <td>{{ top_selling_products_today.0.product_product_name }}</td>
+                    <td>{{ top_selling_products_today.0.total_quantity }}</td>
+                </tr>
+                <tr>
+                    <td>This Week</td>
+                    <td>{{ top_selling_products_week.0.product_product_name }}</td>
+                    <td>{{ top_selling_products_week.0.total_quantity }}</td>
+                </tr>
+                <tr>
+                    <td>This Month</td>
+                    <td>{{ top_selling_products_month.0.product_product_name }}</td>
+                    <td>{{ top_selling_products_month.0.total_quantity }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Bootstrap JS (optional, for some interactive components) -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

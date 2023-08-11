@@ -1,0 +1,56 @@
+
+{% extends 'order/base.html' %}
+
+{% block title %}
+order view
+{% endblock  %}
+
+{% block content %}
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
+            Home
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+
+        <span class="stext-109 cl4">
+            Shoping Cart
+        </span>
+    </div>
+</div>
+    
+
+<!-- Shoping Cart -->
+
+
+    <div class="container">
+    
+                    
+                          <table class="table">
+                            <thead class="thead-light">
+                              <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                              
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% for orders in view_order %}
+                              <tr>
+                                <th scope="row">{{orders.product}}</th>
+                                <td>{{orders.price}}</td>
+                                <td>{{orders.quantity}}</td>
+                                
+                               
+                              </tr>
+                          {% endfor %}
+                            </tbody>
+                          </table>                    
+        
+
+            
+    </div>
+
+
+{% endblock  %}
