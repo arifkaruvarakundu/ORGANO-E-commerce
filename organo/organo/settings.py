@@ -36,7 +36,7 @@ SECRET_KEY = 'django-insecure-dhj0jexrv31s@+67x)9tb#8b_@7)ifuv_)o)80+y(a5b+6xcen
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['54.146.187.216','0.0.0.0']
 
 
 RAZOR_KEY_ID = 'rzp_test_xADEzwG15zURhy'
@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'user',
     'order',
     'widget_tweaks',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -71,6 +72,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
      
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://13.50.235.108",]
 
 ROOT_URLCONF = 'organo.urls'
 
