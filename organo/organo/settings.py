@@ -73,6 +73,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
      
 ]
+CSRF_TRUSTED_ORIGINS = [
+    "http://13.50.235.108",]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://13.50.235.108",]
