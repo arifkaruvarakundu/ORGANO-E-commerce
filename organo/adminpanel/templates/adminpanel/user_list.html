@@ -1,0 +1,44 @@
+{%extends 'adminpanel/admin_base.html'%}
+{% load static %}
+{% block content %}
+    
+<div class="col-sm-12">
+    <div class="bg-white rounded h-100 p-4">
+        <h6 class="mb-4">Customer's List</h6>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Userame</th>
+                    <th scope="col">Id</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Active</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.id}}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.is_active }}</td>
+                    <td>
+                        {% if user.is_active %}
+                            <a href="{% url 'block_user' user.id%}" class="btn btn-outline-danger m-1">Block</a>
+                        {% else %}
+                            <a href="{% url 'unblock_user' user.id%}" class="btn btn-outline-success m-1">Unblock</a>
+                        {% endif %}
+                        <a href="{% url 'delete_user' user.id%}" class="btn btn-outline-dark m-2">Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+{% endblock %}

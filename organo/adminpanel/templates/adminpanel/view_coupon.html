@@ -1,0 +1,64 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container-fluid" style="margin-top: 30px; margin-bottom: 20px;">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="cat-list-title fw-semibold mb-4 text-center">COUPONS</h5>
+                <div class="d-flex justify-content-end">
+                    <div class=" ">
+                        <a href="{% url 'add_coupon' %}" class="btn btn-primary ">Add Coupon</a>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col" class="text-center">No</th>
+                                <th scope="col" class="text-center">Code</th>
+                                <th scope="col" class="text-center">Discount price</th>
+                                <th scope="col" class="text-center">Minimum Spend</th>
+                                <th scope="col" class="text-center">Is expired</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for coupon in coupons %}
+                            <tr>
+                                <th scope="row" class="text-center">{{ coupon.id }}</th>
+                                <td class="text-center">{{ coupon.coupon_code }}</td>
+                                <td class="text-center">{{ coupon.discount_price }}</td>
+                                <td class="text-center">{{ coupon.minimum_amount }}</td>
+                                <td class="text-center">{{ coupon.is_expired }}</td>
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center">
+                                        <div class="mb-2">
+                                            <a href="{% url 'edit_coupon' coupon.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                        </div>
+                                        {% if coupon.is_expired %}
+                                        <div class="mb-2">
+                                            <a href="{% url 'enable_coupon' coupon.id %}" class="btn btn-danger btn-sm">Enable</a>
+                                        </div>
+                                        {% else %}
+                                        <div class="mb-2">
+                                            <a href="{% url 'disable_coupon' coupon.id %}" class="btn btn-success btn-sm">Disable</a>
+                                        </div>
+                                        {%endif%}
+                                    </div>
+                                </td>
+                            </tr>
+                             {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

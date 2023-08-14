@@ -1,0 +1,44 @@
+{%extends 'adminpanel/admin_base.html'%}
+{% load static %}
+{% block title %}
+Orders
+{% endblock %}
+{% block content %}
+
+<div class="table-responsive scrollbar">
+  <table class="table table-hover table-striped overflow-hidden">
+    <thead>
+      <tr>
+        <th scope="col" style="padding-right: 20px;">Order Id</th>
+        <th scope="col" style="padding-right: 20px;">User Name</th>
+        <th scope="col" style="padding-right: 20px;">Created At</th>
+        <th scope="col" style="padding-right: 20px;">Status</th>
+        <th scope="col" style="padding-right: 20px;">Delivery Date</th>
+        <th class="text-end" style="padding-right: 20px;" scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
+      <tr class="align-middle">
+        <td class="text-nowrap">
+          <div class="d-flex align-items-center">
+            
+          </div>
+          <div class="ms-2">{{order.id}}</div>
+        </td>
+        <td class="text-nowrap">{{order.user}}</td>
+        <td class="text-nowrap">{{order.order_date}}</td>
+        <td class="text-nowrap">{{order.payment_status}}</td>
+        <td class="text-nowrap">{{order.delivery_date}}</td>
+        <td class="text-nowrap">{{order.payment_status}}</td>
+        <td>
+          <a class="btn btn-dark" href="{% url 'order_views' order.id %}">ORDER VIEWS</a>
+          <a class="btn btn-light" href="{% url 'cancel_order' order.id %}">ORDER CANCEL</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    
+  </table>
+</div>
+{% endblock %}

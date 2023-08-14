@@ -1,0 +1,193 @@
+{% extends 'cart/base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container">
+  
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  <!-- Shopping Cart -->
+  <div class="bg0 p-t-75 p-b-85">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-10 col-xl-7 m-lr-auto m-b-100">
+          <div class="m-l-25 m-r--38 m-lr-0-xl">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for carts in cart.cartitems_set.all %}
+                  <tr>
+                      <td>
+                          <div class="how-itemcart1">
+                              <img src="{{ carts.product.images.first.image.url }}" alt="Product Image" style="height: 60px; width: 60px;">
+                          </div>
+                      </td>
+                      <td>{{ carts.product.product.name }}-{{carts.product.quality}}</td>
+                      <td><div > {{ carts.product.price }} </div></td>
+                      <td>
+                          {% if carts.product.stock < 1 %}
+                              <span class="text-danger">Out of Stock</span>
+                          {% else %}
+                              <div style="display: inline-block;">
+                                  <div style="display: flex; align-items: center;">
+                                      <button class="btn btn-sm btn-light" onclick="decreaseQuantity('{{ carts.id }}');">-</button>
+                                      <input type="number" class="form-control quantity-input" id="qty{{ carts.id }}" step="1" min="1" max="300" name="quantity" value="{{ carts.quantity }}" onchange="updateQuantity('{{ carts.id }}', this.value);">
+                                      <button class="btn btn-sm btn-light" onclick="increaseQuantity('{{ carts.id }}','{{ carts.product.stock }}');">+</button>
+                                  </div>
+                              </div>
+                          {% endif %}
+                      </td>
+                      <td>
+                          <form method="POST" action="{% url 'remove_from_cart' carts.id %}">
+                              {% csrf_token %}
+                              <input type="hidden" name="item_id" value="{{ carts.id }}">
+                              <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                          </form>
+                      </td>
+                  </tr>
+                  {% endfor %}
+              </tbody>
+              </table>
+            </div>
+            <form id="apply-coupon-form" method="post" class="form-inline d-flex align-items-center">
+              {% csrf_token %}
+              <div class="form-group mr-5">
+                <label for="coupon">Coupon Code:</label>
+                <div class="d-flex align-items-center">
+                  <input type="text" class="form-control form-control-sm mr-5" id="coupon" name="coupon" placeholder="Enter coupon code">
+                  <button type="submit" class="btn btn-success" style="height: 35px; width: 75px;">Apply</button>
+                </div>
+              </div>
+              {% if cart.coupon %}
+              <a href="{% url 'remove_coupon' cart.id %}" class="btn-btn-success">{{cart.coupon.coupon_code}}</a>
+              {% endif %}
+            </form>
+          </div>
+        </div>
+        <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+          <div class="border rounded p-4">
+            <h4 class="mtext-109 cl2 mb-4">Cart Totals</h4>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="stext-110 cl2">Total price:</span>
+              <span class="mtext-110 cl2"></span>
+              <div> <span >{{ total_price|floatformat:"0" }}</span></div>
+
+            </div>
+            <!-- <div class="d-flex justify-content-between mb-3">
+              <span class="stext-110 cl2">Discount applied:</span>
+              <span class="mtext-110 cl2">{{coupon.discount_price|floatformat:"0"}}</span>
+            </div> -->
+            <div class="d-flex justify-content-between mb-3">
+              <span class="stext-101 cl2">Coupon Discount:</span>
+              <span id="coupon" class="stext-110 cl2">{{coupon.discount_price}}</span>
+              
+              
+               
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+              <span class="stext-101 cl2">Final Price:</span>
+              <span id="final_price" class="mtext-110 cl2">{{ final_price }}</span>
+            </div>
+            <!-- coupon_applied_total -->
+            <div class="mt-4">
+              {% if total_price == 0 %}
+              <a href="" class="btn btn-lg btn-primary btn-block">Shop more</a>
+              {% else %}
+              <a href="{% url 'address' %}" class="btn btn-lg btn-success btn-block" >Proceed to Checkout</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script src="{% static 'js/jquery.min.js' %}"></script>
+<script>
+    function updateQuantity(productId, quantity) {
+        $.ajax({
+            type: "POST",
+            url: "/update_quantity",
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            data: {
+                product_id: productId,
+                quantity: quantity
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                  location.reload();
+                    var pricePerItem = parseFloat(response.price);
+                    var quantity = parseInt(response.quantity);
+                    
+             
+                    $("#qty" + productId).val(response.quantity);
+
+                    // Update the total cart price and final price on the page
+                   
+                    $("#coupon-discount").text(0);
+                  
+                } else {
+                    console.log("Quantity update failed:", response.message);
+                }
+            },
+            error: function(xhr, errmsg, err) {
+                console.log("Error updating quantity:", errmsg);
+            }
+        });
+    }
+
+    function decreaseQuantity(cartId) {
+    var inputField = document.getElementById('qty' + cartId);
+    var currentValue = parseInt(inputField.value);
+
+    if (currentValue > 1) {
+        var newValue = currentValue - 1;
+        inputField.value = newValue; // Corrected the assignment to update the input field value
+        console.log('Quantity decreased for cart ' + cartId + ': ' + newValue);
+        updateQuantity(cartId, newValue);
+    }
+}
+
+
+    function increaseQuantity(productId, stock) {
+        var effect = document.getElementById('qty' + productId);
+        var qty = parseInt(effect.value);
+
+        if (!isNaN(qty) && qty < stock && qty < 10) {
+            qty++;
+            effect.value = qty;
+            updateQuantity(productId, qty);
+        } else {
+            alert("Maximum stock limit reached.");
+        }
+    }
+
+    $(document).ready(function() {
+        console.log('Document is ready!');
+    });
+
+</script>
+
+{% endblock %}

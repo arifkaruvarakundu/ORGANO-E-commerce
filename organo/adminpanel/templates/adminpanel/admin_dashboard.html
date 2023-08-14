@@ -1,0 +1,439 @@
+{%extends 'adminpanel/admin_base.html' %}
+{% load static %}
+{% block title %}
+admin dashboard
+{% endblock %}
+{% block link %}
+<style>
+  .form-control-long {
+  width: 500px; /* Adjust the width as needed */
+}
+
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+<br>
+
+
+
+
+
+
+      <!--  Header End -->
+      <div class="container-fluid">
+        <!--  Row 1 -->
+        <div class="row">
+          <div class="col-lg-8 d-flex align-items-strech">
+            <div class="card w-100">
+              <div class="card-body">
+                <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
+                  <div class="mb-3 mb-sm-0">
+                    <h5 class="card-title fw-semibold">Sales Overview</h5>
+                  </div>
+                  
+                </div>
+                <canvas id="myChart"></canvas>
+              </div>
+              <!-- mt test -->
+              
+              
+              <div class="col-lg-12 row mx-auto" >
+                <div class="col-lg-8 card overflow-hidden  ">
+                  <div class="card-body p-3">
+                    <h5 class="card-title mb-9 fw-semibold ">Selected day total Orders</h5>
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <h4 class="fw-semibold mb-3">{{order_count_date}}</h4>
+                        
+                      </div>
+                      <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                          <div id="breakupp"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+                </div>
+                <div class="col-lg-2">
+                  <form method="GET" action="{% url 'dashboard' %}" class="d-flex flex-column ">
+                    <div class="mb-3">
+                      <label for="start-date">Start Date</label>
+                      <input type="date" id="start-date" name="start_date" class="form-control form-control-long" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="end-date">End Date</label>
+                      <input type="date" id="end-date" name="end_date" class="form-control form-control-long">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                  </form>
+                </div>
+
+               
+                
+
+
+
+
+
+                
+              </div>
+
+              <div class="col-lg-12">
+                <div class="card overflow-hidden">
+                  <div class="card-body p-4">
+                    <h5 class="card-title mb-9 fw-semibold">Selected day total profit</h5>
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <h4 class="fw-semibold mb-3">{{total_price_date}}</h4>
+                        
+                      </div>
+                      <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                          <div id="breakupp"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+        <div class="col-lg-12 d-flex align-items-stretch row mx-auto">
+          <div class="card w-100">
+            <div class="card-body p-4 ">
+              <h5 class="card-title fw-semibold mb-4">Recent orders</h5>
+              <div class="table-responsive">
+                <table class="table text-nowrap mb-0 align-middle">
+                  <thead class="text-dark fs-4">
+                    <tr>
+                      <!-- <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Id</h6>
+                      </th> -->
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Username</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">State</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">price</h6>
+                      </th>
+                      <th class="border-bottom-0">
+                        <h6 class="fw-semibold mb-0">Payment method</h6>
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for order in recent_orders %}
+            <tr>
+              <td class="border-bottom-0">
+                <h6 class="fw-semibold mb-1">{{ order.address.first_name }}</h6>
+                <span class="fw-normal">{{ order.user_role }}</span>                          
+              </td>
+              <td class="border-bottom-0">
+                <p class="mb-0 fw-normal">{{ order.address.state }}</p>
+              </td>
+              <td class="border-bottom-0">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="badge bg-primary rounded-3 fw-semibold">{{ order.total_price }}</span>
+                </div>
+              </td>
+              <td class="border-bottom-0">
+                <h6 class="fw-semibold mb-0 fs-4">{{ order.payment_method }}</h6>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+                    
+                    
+                                 
+                  </tbody>
+                </table>
+              </div>
+            </div>
+           
+
+
+
+
+          </div>
+          
+          
+          
+
+          
+        </div>
+                            <!-- mt test -->
+
+            </div>
+          </div>
+
+          
+
+
+
+      
+         
+          <div class="col-lg-4">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card overflow-hidden">
+                  <div class="card-body p-4">
+                    <h5 class="card-title mb-9 fw-semibold">Total products</h5>
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <canvas id="myChart1"></canvas>
+
+                      </div>
+                      <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                          <div id="breakupp"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- test -->
+                <div class="text-center mb-10">
+                  <a href="{% url 'pdf_view' %}" class="btn btn-primary btn-lg btn-block">Sales report</a>
+                </div>
+                <br>
+                
+                <!-- Yearly Breakup -->
+                <div class="card overflow-hidden">
+                  <div class="card-body p-4">
+                    <h5 class="card-title mb-9 fw-semibold">Total Order</h5>
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <h4 class="fw-semibold mb-3">{{order_count}}</h4>
+                        
+                      </div>
+                      <div class="col-4">
+                        <div class="d-flex justify-content-center">
+                          <div id="breakupp"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <!-- Yearly Breakup -->
+                <div class="card overflow-hidden">
+                  <div class="card-body p-4">
+                    <h5 class="card-title mb-9 fw-semibold">Total profit</h5>
+                    <div class="row align-items-center">
+                      <div class="col-8">
+                        <h4 class="fw-semibold mb-3">{{total_price}}</h4>
+                        
+                      </div>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-12">
+                <!-- Monthly Earnings -->
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row alig n-items-start">
+                      <div class="col-8">
+                        <h5 class="card-title mb-9 fw-semibold"> Today orders : ( {{order_count_today}} )</h5>
+                        <h4 class="fw-semibold mb-3">Amount : {{total_price_today}}</h4>
+                        
+                      </div>
+                      
+                      
+                    </div>
+                  </div>
+                </div>
+                <!-- test -->
+                <div class="card">
+                  <div class="card-body">
+                    <div class="row alig n-items-start">
+                      <h5 class="card-title mb-9 fw-semibold">Top Selling Products</h5>
+
+                      <table class="table text-nowrap mb-0 align-middle">
+                        <thead class="text-dark fs-4">
+                          <tr>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Product Name</h6>
+                            </th>
+                            <th class="border-bottom-0">
+                              <h6 class="fw-semibold mb-0">Total Quantity Sold</h6>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for product in top_selling_products %}
+                          <tr>
+                            <td class="border-bottom-0">
+                              <p class="mb-0 fw-normal">{{ product.product_products_name }}</p>
+                            </td>
+                            <td class="border-bottom-0">
+                              <p class="mb-0 fw-normal">{{ product.total_quantity }}</p>
+                            </td>
+                          </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                      <!-- <div class="col-8">
+                        <h5 class="card-title mb-9 fw-semibold"> Today orders : ( {{order_count_today}} )</h5>
+                        <h4 class="fw-semibold mb-3">Amount : {{total_price_today}}</h4>
+                        
+                      </div> -->
+                      
+                      
+                      
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- test -->
+                
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+
+        
+
+     
+        
+
+
+
+      </div>
+
+
+
+
+      </div>
+
+       
+  {% block scripts %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Chart data
+            var data = {
+              labels: [{% for entry in daily_totals %}"{{ entry.date }}",{% endfor %}],
+              datasets: [{
+                label: "Total Order profit",
+                data: [{% for entry in daily_totals %}{{ entry.total }},{% endfor %}],
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+              }]
+            };
+        
+            // Chart configuration
+            var config = {
+              type: 'line',
+              data: data,
+              options: {
+                responsive: true,
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            };
+        
+            // Create the chart
+            var ctx = document.getElementById('myChart').getContext('2d');
+            var myChart = new Chart(ctx, config);
+          </script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const data = {
+        labels: [
+          {% for category in categories %}
+            "{{ category.name }}",
+          {% endfor %}
+        ],
+        datasets: [{
+          data: [
+            {% for count in data %}
+              {{ count }},
+            {% endfor %}
+          ],
+          backgroundColor: [
+            'rgb(255, 99, 132)',
+            'rgb(54, 162, 235)',
+            'rgb(255, 205, 86)',
+            'rgb(75, 192, 192)',
+            'rgb(153, 102, 255)',
+            'rgb(255, 159, 64)',
+            'rgb(120, 120, 120)',
+            'rgb(0, 166, 90)',
+            'rgb(255, 0, 255)',
+            'rgb(255, 102, 0)'
+          ],
+          hoverOffset: 4
+        }]
+      };
+  
+      const ctx = document.getElementById('myChart1').getContext('2d');
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+          plugins: {
+            legend: {
+              display: false // Hide the legend
+            },
+            tooltip: {
+              callbacks: {
+                title: function(context) {
+                  // Retrieve the category label only on hover
+                  return data.labels[context[0].dataIndex];
+                },
+                label: function(context) {
+                  // Show the value as a label on hover
+                  return context.parsed + ' products';
+                }
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const startDateInput = document.getElementById("start-date");
+    const endDateInput = document.getElementById("end-date");
+
+    startDateInput.addEventListener("change", function() {
+      const startDate = new Date(startDateInput.value);
+
+      // Set the minimum date for the end date input to the selected start date
+      endDateInput.min = startDateInput.value;
+
+      // Disable end date options that are earlier than the selected start date
+      const endDateOptions = endDateInput.querySelectorAll("option");
+      endDateOptions.forEach(function(option) {
+        const optionDate = new Date(option.value);
+        option.disabled = optionDate < startDate;
+      });
+    });
+  });
+</script>
+
+
+
+      {% endblock %}
+ 
+    {% endblock %}

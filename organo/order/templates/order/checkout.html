@@ -1,0 +1,220 @@
+{% extends 'order/base.html' %}
+{% load static %}
+{% block title %}
+EDIT address
+{% endblock  %}
+
+{% block content %}
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
+            Home
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+
+        <span class="stext-109 cl4">
+            Shoping Cart
+        </span>
+    </div>
+</div>
+    
+
+<!-- Shoping Cart -->
+<br>
+
+<form class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+                <div class="m-l-25 m-r--38 m-lr-0-xl">
+                    <div class="wrap-table-shopping-cart">
+                        <div class="card">
+                            <div class="card-header">
+                              User Selected Address
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ user_add.first_name }} {{ user_add.last_name }}</h5>
+                                <p class="card-text">{{ user_add.email }}</p>
+                                <p class="card-text">
+                                    {{ user_add.address_line_1 }}
+                                    {{ user_add.city }}, {{ user_add.state }},
+                                    {{ user_add.country }}, {{ user_add.postal_code }}
+                                </p>
+                                <p class="card-text">Ph: {{ user_add.phone_number }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+                <div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="mtext-109 cl2 p-b-30">
+                                Cart Totals
+                            </h4>
+                        <div class="card-body">
+                            <div class="flex-w flex-t bor12 p-b-13">
+                                <div class="size-208">
+                                    <span class="stext-110 cl2">
+                                        Subtotal:
+                                    </span>
+                                </div>
+
+                                <div class="size-209">
+                                    <span class="mtext-110 cl2">
+                                        {{ final_price }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex-w flex-t bor12 p-t-15 p-b-30">
+                                <div class="size-208">
+                                    <span class="stext-110 cl2">
+                                        Additional Charges:
+                                    </span>
+                                </div>
+
+                                <div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
+                                    <span class="mtext-110 cl2">
+                                        $0
+                                    </span>
+                                    
+                                    <div class="p-t-15">
+                                        <span class="stext-112 cl8">
+                                            for tax and other charges
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex-w flex-t p-t-27 p-b-33">
+                                <div class="size-208">
+                                    <span class="mtext-101 cl2">
+                                        Total:
+                                    </span>
+                                </div>
+
+                                <div class="size-209 p-t-1">
+                                    <span class="mtext-110 cl2">
+                                        {{final_price }}
+                                    </span>
+                                </div>
+                                <br></br>
+                                <div class="row">
+                                    <div class="col">
+                                        <a href="{% url 'place_order' user_add.id %}" style="text-decoration: none;background-color: #7FAD39;color: white;" class="btn btn">
+                                            Cash on Delivery
+                                        </a>
+                                    </div>
+                                    <div class="col">
+                                        <form>
+                                            {% csrf_token %}
+                                            <button id="rzp-button1" class="btn btn button" style="color: white;background-color: #7FAD39;">Pay Using Razorpay</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                  </div>            
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+  
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('rzp-button1').onclick = function(e) {
+    // Make an AJAX POST request to initiate the payment
+    $.ajax({
+        type: "POST",
+        url: '/initiate_payment/',  // Replace with the actual URL of your Django view
+        headers: { "X-CSRFToken": "{{ csrf_token }}" }, // Add this line to include the CSRF token
+        dataType: 'json',  // Expect JSON response from the server
+        success: function(response) {
+            // Update the options with the received data from the server
+            var options = {
+                "key": response.key,
+                "amount": response.amount,
+                "currency": response.currency,
+                "name": "ORGANO",
+                "description": "Thank you for purchasing from us",
+                "image": "{% static 'user/img/logo1.png' %}",
+                "order_id": response.order_id,                 
+                "handler": function (response) {
+                    alert(response.razorpay_payment_id);
+                    alert(response.razorpay_order_id);
+                    alert(response.razorpay_signature);
+                    var paymentId = response.razorpay_payment_id;
+                    var orderId = response.razorpay_order_id;
+                    var signature = response.razorpay_signature;
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/online_payment_order/{{ user_add.id }}",
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                        data: {
+                            payment_id: paymentId,
+                            orderId: orderId,
+                            signature: signature
+                        },
+                        success: function(response) {
+                            var id = response.orderId;
+                            console.log("Order ID:", id);
+                            window.location.href = "/order_success/" + id;
+                            console.log("Order placed successfully!");
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle the error if any
+                            console.log(xhr.responseText);
+                            alert("Error placing the order. Please try again.");
+                        }
+                    });
+                },
+                "prefill": {
+                    "name": "Muhammed Harif",
+                    "email": "harifn786@gmail.com",
+                    "contact": "9745674674"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#7FAD39"
+                }
+            };
+
+            // Create a new instance of Razorpay with updated options
+            var rzp1 = new Razorpay(options);
+
+            // Handle the payment response
+            rzp1.on('payment.failed', function(response) {
+                alert(response.error.code);
+                alert(response.error.description);
+                alert(response.error.source);
+                alert(response.error.step);
+                alert(response.error.reason);
+                alert(response.error.metadata.order_id);
+                alert(response.error.metadata.payment_id);
+            });
+
+            // Open the Razorpay payment popup
+            rzp1.open();
+        },
+        error: function(xhr, status, error) {
+            // Handle the error if any
+            console.log(xhr.responseText);
+            alert("Error initiating payment. Please try again.");
+        }
+    });
+
+    e.preventDefault();
+};
+</script>
+{% endblock %}

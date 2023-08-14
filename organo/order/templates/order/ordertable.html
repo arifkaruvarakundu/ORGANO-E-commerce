@@ -1,0 +1,70 @@
+{% extends 'order/base.html' %}
+
+{% block title %}
+order place
+{% endblock  %}
+
+{% block content %}
+<div class="container">
+    <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+        <a href="{% url 'home' %}" class="stext-109 cl8 hov-cl1 trans-04" style="color: #7FAD39;">
+            Home
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+        <a href="{% url 'profile_view' %}" class="stext-109 cl8 hov-cl1 trans-04" style="color: #7FAD39;">
+            Profile
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+
+
+        <span class="stext-109 cl4">
+            Order Table
+        </span>
+    </div>
+</div>
+    
+
+<!-- Shoping Cart -->
+<br>
+
+<form class="bg0 p-t-75 p-b-85">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+                <div class="m-l-25 m-r--38 m-lr-0-xl">
+                    <div class="wrap-table-shopping-cart">
+                        <table class="table table-striped table-bordered">
+                            <thead class="thead-light">
+                                <tr>
+                                    <th scope="col">Order Id</th>
+                                    <th scope="col">Payment Status</th>
+                                    <th scope="col">Payment Method</th>
+                                    <th scope="col">Order Date</th>
+                                    <th scope="col">Delivery Date</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                <tr>
+                                    <td>{{ order.id }}</td>
+                                    <td>{{ order.payment_status }}</td>
+                                    <td>{{ order.payment_method }}</td>
+                                    <td>{{ order.order_date }}</td>
+                                    <td>{{ order.delivery_date }}</td>
+                                    <td>
+                                        <a class="btn btn-dark" href="{% url 'cancel_orders' order.id %}" role="button">Cancel</a>
+                                        <a href="{% url 'order_view' order.id %}" role="button" class="btn btn" style="background-color: #7FAD39;color: white;">View</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock %}

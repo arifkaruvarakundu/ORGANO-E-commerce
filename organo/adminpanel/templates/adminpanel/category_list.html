@@ -1,0 +1,62 @@
+{% extends 'adminpanel/admin_base.html' %}
+{% load static %} 
+
+{% block content %}
+
+{% if messages %}
+    <div id="messages" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #ff0000; color: #ffffff; padding: 10px; border-radius: 5px; text-align: center; font-weight: bold;">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        setTimeout(function() {
+            var messagesDiv = document.getElementById('messages');
+            messagesDiv.style.display = 'none';
+        }, 5000);
+    </script>
+{% endif %}
+
+
+<div class="container-fluid d-flex gap-4" style="background-color: #EDF1F5;">
+    
+    <div style="overflow-y: auto;" class="w-100 d-flex align-items-center align-items-center">
+        <div class="table">
+            <table class="table table-light table-striped table-responsive">
+                <thead>
+                    <tr>
+                        <th>sl.no</th>
+                        <th>Category Name</th>
+                        <th>Edit</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ category.name }}</td>
+                        <td><a href="{% url 'edit_category' category.id %}"><button type="button" class="btn btn-success">Edit</button></a></td>
+                        <td>
+                            <button onclick="confirmDeletion('{{ category.id }}')" type="button" class="btn btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function confirmDeletion(categoryId) {
+        if (confirm("Are you sure you want to delete this category?")) {
+            window.location.href = "{% url 'delete_category' 0 %}".replace("0", categoryId);
+        }
+    }
+</script>
+
+{% endblock content %}
