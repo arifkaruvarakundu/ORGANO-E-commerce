@@ -291,7 +291,7 @@
                             </ul>
                         </div>
                         <div class="featured__item__text">
-                            <h6><a href="#">{{ variant.product.name }}</a></h6>
+                            <h6><a href="{% url 'variant_details' variant.id %}">{{ variant.product.name }}</a></h6>
                             <h5>Rs:{{ variant.price }}</h5>
                         </div>
                     </div>

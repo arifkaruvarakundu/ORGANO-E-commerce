@@ -47,7 +47,7 @@ def online_payment_order(request, userId):
         cartss = Cart.objects.get(user=request.user)
         items = CartItems.objects.filter(cart=cartss)
         total_price = sum(item.price * item.quantity for item in items)
-        print('==========================================',total_price)
+        
     
         order = Order.objects.create(
             user=request.user,
@@ -194,7 +194,6 @@ def initiate_payment(request):
         cartss = Cart.objects.get(user=request.user)
         items = CartItems.objects.filter(cart=cartss)
         total_price =cartss.get_total_price()
-        print(total_price,"--------------------------------------------toTal price")
         client = razorpay.Client(auth=("rzp_test_xADEzwG15zURhy","SqSffCZ1rmXL4wWih9Zq9lXk"))
         payment = client.order.create({
 
@@ -203,7 +202,7 @@ def initiate_payment(request):
               'payment_capture': 1
               
               })
-        print(payment)
+        
     
         response_data = {
             'order_id': payment['id'],

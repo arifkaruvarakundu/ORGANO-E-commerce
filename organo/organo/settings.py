@@ -106,6 +106,7 @@ WSGI_APPLICATION = 'organo.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'admin',
         'NAME': 'admin',
         'USER': 'postgres',
         'PASSWORD': '1234',
