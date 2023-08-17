@@ -37,10 +37,10 @@
             <a href="#"><img src="img/logo.png" alt=""></a>
         </div>
         <div class="humberger__menu__cart">
-            <ul>
+            <!-- <ul>
                 <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
                 <li><a href="#"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
-            </ul>
+            </ul> -->
             <div class="header__cart__price">item: <span>$150.00</span></div>
         </div>
         <div class="humberger__menu__widget">
@@ -152,10 +152,10 @@
                 </div>
                 <div class="col-lg-3">
                     <div class="header__cart">
-                        <ul>
+                        <!-- <ul>
                             <li><a href="{% url 'view_wishlist' %}"><i class="fa fa-heart"></i> <span>1</span></a></li>
                             <li><a href="{% url 'view_cart' %}"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
-                        </ul>
+                        </ul> -->
                         <div class="header__cart__price">item: <span>$150.00</span></div>
                     </div>
                 </div>
@@ -275,8 +275,10 @@
                                 {% endfor %}
                             </form>
                         </div>
+                        {% if request.user.is_authenticated %}
                         <a href="{% url 'add_to_cart' variant.id %}" class="primary-btn">ADD TO CART</a>
                         <a href="{% url 'add_to_wishlist' variant.id %}" class="heart-icon"><span class="icon_heart_alt"></span></a>
+                        {% endif %}
                         <ul>
                             <li><b>Availability</b> <span>In Stock</span></li>
                             <li><b>Shipping</b> <span>01 day shipping. <samp>Free pickup today</samp></span></li>

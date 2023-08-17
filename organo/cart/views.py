@@ -98,14 +98,15 @@ def view_cart(request):
         
     else:
         discount_price = 0
-
+    
     final_price=total_price-discount_price
     context = {
             'cart': cart_obj,
             'total_price': total_price,
             'coupon':coupon,
             'discount_price':discount_price,
-            'final_price':final_price
+            'final_price':final_price,
+
 
             }
        

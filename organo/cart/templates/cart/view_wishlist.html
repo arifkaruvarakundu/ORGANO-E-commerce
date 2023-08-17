@@ -35,10 +35,10 @@
                         
                                     <td class="text-center">
                                         <div class="d-flex justify-content-center">
+                                            <div class="mb-2 p-4">
+                                                <a href="{% url 'remove_wish' product.product.id %}" class="btn btn-danger btn-sm">Remove</a>
+                                            </div>
                                             {% if product.product.stock > 0 %}
-                                                <div class="mb-2 p-4">
-                                                    <a href="{% url 'remove_wish' product.product.id %}" class="btn btn-danger btn-sm">Remove</a>
-                                                </div>
                                                 {% if product.product.id in user_products %}
                                                     <div class="mb-2 p-4">
                                                         <a href="{% url 'view_cart' %}" class="btn btn-success btn-sm" style="color: white;">Added to Cart</a>
@@ -55,6 +55,7 @@
                                             {% endif %}
                                         </div>
                                     </td>
+                                    
                                     
                                 </tr>
                                 {% endfor %}

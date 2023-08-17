@@ -75,7 +75,7 @@
                 </div>
               </div>
               {% if cart.coupon %}
-              <a href="{% url 'remove_coupon' cart.id %}" class="btn-btn-success">{{cart.coupon.coupon_code}}</a>
+              <a href="{% url 'remove_coupon' cart.id %}" class="btn-btn-success">Remove{{cart.coupon.coupon_code}}</a>
               {% endif %}
             </form>
           </div>
@@ -97,8 +97,6 @@
               <span class="stext-101 cl2">Coupon Discount:</span>
               <span id="coupon" class="stext-110 cl2">{{coupon.discount_price}}</span>
               
-              
-               
             </div>
             <div class="d-flex justify-content-between mb-3">
               <span class="stext-101 cl2">Final Price:</span>

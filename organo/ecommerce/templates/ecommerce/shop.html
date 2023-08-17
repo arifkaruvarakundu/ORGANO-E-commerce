@@ -146,15 +146,17 @@
                                 </ul> -->
                             </li>
                             <!-- <li><a href="./blog.html">Blog</a></li> -->
-                            <li><a href="./contact.html">Contact</a></li>
+                            <li><a href="#">Contact</a></li>
                         </ul>
                     </nav>
                 </div>
                 <div class="col-lg-3">
                     <div class="header__cart">
                         <ul>
+                            {% if request.user.is_authenticated %} 
                             <li><a href="{% url 'view_wishlist' %}"><i class="fa fa-heart"></i> <span>1</span></a></li>
                             <li><a href="{% url 'view_cart' %}"><i class="fa fa-shopping-bag"></i> <span>3</span></a></li>
+                            {% endif %}
                         </ul>
                         <div class="header__cart__price">item: <span>$150.00</span></div>
                     </div>
@@ -193,7 +195,7 @@
                                     All Categories
                                     <span class="arrow_carrot-down"></span>
                                 </div> -->
-                                <input type="text" placeholder="What do yo u need?">
+                                <input type="text" placeholder="What do you need?">
                                 <button type="submit" class="site-btn">SEARCH</button>
                             </form>
                         </div>
@@ -244,12 +246,15 @@
                                         <!-- <div class="product__discount__percent"></div> -->
                                     {% endif %}
                                     <ul class="product__item__pic__hover">
-                                        <li><a href="#"><i class="fa fa-heart"></i></a></li>
+                                        {% if request.user.is_authenticated %}
+                                        <li><a href="{% url 'add_to_wishlist' variant.id %}"><i class="fa fa-heart"></i></a></li>
+                                        {% endif %}
                                         {% if quality %}
                                             <li><a href="{% url 'variant_details' variant.id %}"><i class="fa fa-retweet"></i></a></li>
                                         {% else %}
                                             <li><a href="{% url 'variant_details' variant.id %}"><i class="fa fa-retweet"></i></a></li>
                                         {% endif %}
+                                        
                                     </ul>
                                 </div>
                                 <div class="product__discount__item__text">

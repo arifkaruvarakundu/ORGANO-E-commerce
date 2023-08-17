@@ -121,7 +121,7 @@
                     </ul> -->
                   </li>
                   <!-- <li><a href="./blog.html">Blog</a></li> -->
-                  <li><a href="./contact.html">Contact</a></li>
+                  <li><a href="#">Contact</a></li>
                 </ul>
               </nav>
             </div>
@@ -287,7 +287,9 @@
                                 <img src="{% static 'path/to/default/image.jpg' %}" alt="No Image">
                             {% endif %}
                             <ul class="featured__item__pic__hover">
+                                {% if request.user.is_authenticated %}
                                 <li><a href="{% url 'add_to_wishlist' variant.id %}"><i class="fa fa-heart"></i></a></li>
+                                {% endif %}
                                 {% if quality %}
                                             <li><a href="{% url 'variant_details' variant.id %}"><i class="fa fa-retweet"></i></a></li>
                                         {% else %}

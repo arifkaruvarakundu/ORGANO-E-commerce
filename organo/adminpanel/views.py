@@ -649,29 +649,32 @@ def view_coupon(request):
    
 
 def edit_coupon(request, coupon_id):
-    
     coupon = get_object_or_404(Coupon, id=coupon_id)
+    
     if request.method == 'POST':
         # Update the coupon instance with the form data
-         coupon.code = request.POST['coupon_code']
-         coupon.discount = request.POST['discount_price']
-        #  coupon.valid_from = request.POST['valid_from']
-        #  coupon.valid_to = request.POST['valid_to']
-         coupon.minimum_amount = request.POST['minimum_amount']
-         coupon.is_expired = 'is_expired' in request.POST
-        #  coupon.single_use_per_user = 'single_use_per_user' in request.POST
-        #  coupon.quantity = request.POST['quantity']
+        coupon.code = request.POST.get('coupon_code')
+        coupon.discount = request.POST.get('discount_price')
+        # coupon.valid_from = request.POST.get('valid_from')
+        # coupon.valid_to = request.POST.get('valid_to')
+        coupon.minimum_amount = request.POST.get('minimum_amount')
+        coupon.is_expired = 'is_expired' in request.POST
+        # coupon.single_use_per_user = 'single_use_per_user' in request.POST
+        # coupon.quantity = request.POST.get('quantity')
 
         # Save the updated coupon instance
-         coupon.save()
+        coupon.save()
 
         # Redirect to a success page or show a success message
-         return redirect('view_coupon') 
+        return redirect('view_coupon')  # Replace 'view_coupon' with your appropriate URL name
+    
+    # If the request is not POST, render the edit coupon form
+    return render(request, 'adminpanel/edit_coupon.html', {'coupon': coupon}) 
      
 
 
 
-    return render(request, 'adminpanel/edit_coupon.html',{'coupon': coupon})
+    
     
 def add_coupon(request):
     if request.method == 'POST':
