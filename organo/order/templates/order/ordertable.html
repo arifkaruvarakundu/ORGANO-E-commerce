@@ -53,7 +53,7 @@ order place
                                     <td>{{ order.order_date }}</td>
                                     <td>{{ order.delivery_date }}</td>
                                     <td>
-                                        <a class="btn btn-dark" href="{% url 'cancel_orders' order.id %}" role="button">Cancel</a>
+                                        
                                         <a href="{% url 'order_view' order.id %}" role="button" class="btn btn" style="background-color: #7FAD39;color: white;">View</a>
                                     </td>
                                 </tr>

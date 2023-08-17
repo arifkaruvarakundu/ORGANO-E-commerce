@@ -818,4 +818,21 @@ def reset_password(request):
 
     return render(request, 'adminpanel/resetpassword.html')
 
+def order_deliverd(request, order_id):
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, id=order_id)
+        
+        # Make sure the order is in the 'SHIPPED' status before marking it as 'DELIVERED'
+        if order.order_status == 'Shipped':
+            order.order_status = 'Delivered'
+            order.delivery_date=timezone.now()
+            order.return_period_expired=timezone.now()+timezone.timedelta(days=5)
+
+        if order.payment_status=='Pending':
+            order.payment_status='Paid'
+        order.save()
+        
+
+        return redirect(request.META.get('HTTP_REFERER'))
+
 

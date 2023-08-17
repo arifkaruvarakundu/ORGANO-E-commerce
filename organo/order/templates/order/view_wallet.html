@@ -1,0 +1,96 @@
+{% extends 'order/base.html' %}
+{% load static %}
+{% block title %}
+wallet
+{% endblock  %}
+{% block content %}
+<style>
+    .wallet-box {
+        border: 1px solid #ccc;
+        padding: 20px;
+        margin: 20px;
+        box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+        background-color: #f9f9f9;
+        border-radius: 5px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .table th, .table td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .table th {
+        background-color: #f2f2f2;
+    }
+
+    .table tbody tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    .credited {
+        color: green;
+    }
+
+    .debited {
+        color: red;
+    }
+</style>
+</head>
+<body>
+
+<div class="wallet-box">
+    <div class="card-body">
+        <h5 class="card-title">Wallet Details</h5>
+        <p>Username: {{ wallet.user.username }}</p>
+        <p>Balance: {{ wallet.balance }}</p>
+        <!-- Add other wallet details if needed -->
+
+        <h5 class="card-title">Transaction History</h5>
+        {% if transactions %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Credited/Debited</th>
+                    <th>Order ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>
+                    {% if transaction.transaction_type == 'Cancelled' or transaction.transaction_type == 'Return' %}
+                        <span class="credited">Credited ++</span>
+                    {% elif transaction.transaction_type == 'Purchased' %}
+                        <span class="debited">Debited --</span>
+                    {% endif %}
+                    </td>
+                    <td>{{ transaction.order_id.id }}({{ transaction.get_transaction_type_display }})</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No transactions found.</p>
+        {% endif %}
+    </div>
+</div>
+
+
+{% endblock  %}
+

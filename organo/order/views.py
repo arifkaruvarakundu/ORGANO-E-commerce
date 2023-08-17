@@ -169,9 +169,11 @@ def ordertable(request):
 
 def order_view(request,order_id):
     orders = Order.objects.get(id=order_id)
+    
     view_order = OrderItem.objects.filter(order=orders)
-
+    
     context ={
+        'orders':orders,
         'view_order':view_order
     }
 
@@ -184,6 +186,33 @@ def cancel_orders(request,order_id):
             order.payment_status = 'CANCELLED'
             order.save()
     return redirect('ordertable')
+
+from django.contrib import messages
+from django.views.decorators.http import require_POST
+@require_POST
+def order_cancel(request, order_id):
+    
+   
+    order = get_object_or_404(Order, id=order_id)
+    
+    if order.payment_status != 'CANCELLED':
+        
+
+        order_items = OrderItem.objects.filter(order=order)
+        
+
+        for item in order_items:
+            variant = item.product
+            variant.stock = variant.stock + item.quantity
+            variant.save()
+
+
+        order.payment_status = 'CANCELLED'
+        order.save()
+        Notifications.objects.create(order=order, action_required=order.payment_status)
+        messages.success(request, 'Your order Cancelled, cash will be credited soon.')
+
+    return redirect(request.META.get('HTTP_REFERER'))
 
 
 
@@ -230,3 +259,23 @@ def order_success(request,orderId):
 
 
     return render(request,"order/order_success.html",context)
+
+def user_view_wallet(request):
+    user = request.user
+    try: 
+        wallet = Wallet.objects.get(user=user)
+    except Wallet.DoesNotExist:
+        # If the wallet doesn't exist, create one for the user
+        wallet = Wallet.objects.create(user=user, balance=0)
+        transactions = [] 
+ 
+
+    # Fetch the transaction history for the user's wallet
+    transactions = WalletTransaction.objects.filter(wallet=wallet).order_by('-date') 
+
+    context = {
+        'wallet':wallet,
+        'transactions':transactions
+    }
+
+    return render(request, 'order/view_wallet.html', context)

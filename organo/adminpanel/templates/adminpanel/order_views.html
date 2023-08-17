@@ -26,9 +26,9 @@ Order views
                 <tbody>
                     {% for orderss in order  %}
                     <tr>
-                        <td><img style="width:150px;height:160px;" src="{{MEDIA_URL}}{{ product.image.url}}" alt="{{product.name}}"></td>
+                        <td><img style="width:150px;height:160px;" src="{{ orderss.product.images.first.image.url }}" alt="{{product.name}}"></td>
 
-                        <th scope="row">{{orderss.product.name}}</th>
+                        <th scope="row">{{orderss.product.title}}</th>
                         <td>{{orderss.price}}</td>
                         <td>{{orderss.quantity}}</td>
                        

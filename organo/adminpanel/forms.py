@@ -29,7 +29,7 @@ class OrderForm(forms.ModelForm):
 
     class Meta:
         model = Order
-        fields = ['user','address','total_price','payment_status','payment_method','message','tracking_no','order_date','delivery_date','razor_pay_order_id','razor_pay_payment_id','razor_pay_payment_signature']
+        fields = ['user','address','total_price','payment_status','payment_method','order_date','delivery_date','razor_pay_order_id','razor_pay_payment_id','razor_pay_payment_signature']
 
 class CategoryForm(forms.ModelForm):
     class Meta:

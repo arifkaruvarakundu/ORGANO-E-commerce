@@ -8,13 +8,18 @@ order view
 {% block content %}
 <div class="container">
     <div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
-        <a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
+        <a href="{% url 'home' %}" class="stext-109 cl8 hov-cl1 trans-04">
             Home
             <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
         </a>
 
         <span class="stext-109 cl4">
-            Shoping Cart
+          <a href="{% url 'ordertable' %}" class="stext-109 cl8 hov-cl1 trans-04">
+            order table
+            <i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+        </a>
+
+            
         </span>
     </div>
 </div>
@@ -24,6 +29,34 @@ order view
 
 
     <div class="container">
+      <div class="mt-4">
+            
+        {% if orders.payment_status == 'PAID' and orders.payment_status != 'RETURNED' and orders.payment_status != 'CANCELLED' %}
+            {% comment %} {% if orders.payment_method == "WALLET" %} {% endcomment %}
+                <form action="{% url 'order_cancel' orders.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" {% if orders.return_period_expired %}disabled{% endif %}>
+                        {% if orders.return_period_expired %}
+                            Return period has expired
+                        {% else %}
+                            Cancel
+                        {% endif %}
+                    </button>
+                </form>
+            {% comment %} {% endif %} {% endcomment %}
+        {% elif orders.payment_status == 'DELIVERED' %}
+            {% if not orders.return_period_expired %}
+                <form action="#" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                        Return
+                    </button>
+                </form>
+            {% else %}
+                <p class="text-danger">Return period has expired.</p>
+            {% endif %}
+        {% endif %}
+    </div>
     
                     
                           <table class="table">
@@ -32,6 +65,7 @@ order view
                                 <th scope="col">Product</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
+                                <th scope="col">Image</th>
                               
                               </tr>
                             </thead>
@@ -41,6 +75,8 @@ order view
                                 <th scope="row">{{orders.product}}</th>
                                 <td>{{orders.price}}</td>
                                 <td>{{orders.quantity}}</td>
+                                <td><img src="{{ orders.product.images.first.image.url }}" class="img-thumbnail" style="height:70px;width:70px;" alt=""></td>
+                                
                                 
                                
                               </tr>
@@ -48,7 +84,27 @@ order view
                             </tbody>
                           </table>                    
         
-
+                          <div class="inline-boxes mt-4 d-flex">
+                            <!-- Order details box -->
+                            <div class="order-details">
+                                <h2>Order Details</h2>
+                                <p><strong>Order ID:</strong> {{ orders.id }}</p>
+                                <p><strong>Order Date:</strong>  {{ orders.order_date }}</p>
+                                {% if orders.payment_status != 'CANCELLED' and orders.payment_status != 'RETURNED' %}
+                                <p><strong>Delivery Date:</strong> {{ orders.delivery_date }}</p>
+                                {% endif %}
+                                <p><strong>Payment Method:</strong> {{ orders.payment_method }}</p>
+                                <p><strong>Order status:</strong><span class="font-weight-bold  text-danger mx-2">{{ orders.payment_status }}</span></p>
+                                <p><strong>Applied Coupons:</strong>{{ orders.applied_coupon }}</p>
+                                <p><strong>Total Price:</strong> {{ orders.total_price }}</p>
+                                
+                                <!-- Submit button for processing the order -->
+                                
+                            </div>
+                    
+                            
+                    
+                        </div>
             
     </div>
 
