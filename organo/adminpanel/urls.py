@@ -34,6 +34,10 @@ urlpatterns = [
     path('password_reset_request/', views.password_reset_request, name='password_reset_request'),
     path('verify_otp/', views.verify_otp, name='verify_otp'),
     path('reset_password/', views.reset_password, name='reset_password'),
+    path('order_shipped/<int:order_id>', views.order_shipped, name='order_shipped'),
+    path('admin_order_cancel/<int:order_id>', views.admin_order_cancel, name='admin_order_cancel'),
+    path('order_deliverd/<int:order_id>', views.order_deliverd, name='order_deliverd'),
+    
     
 
 ]

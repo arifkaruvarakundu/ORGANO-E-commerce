@@ -282,7 +282,8 @@ def order_views(request,order_id):
     order = OrderItem.objects.filter(order=view_order)
 
     context ={
-        'order':order
+        'order':order,
+        'view_order':view_order
     }
     return render(request,'adminpanel/order_views.html',context)
 
@@ -307,6 +308,73 @@ def cancel_order(request, order_id):
         order.save()
 
     return redirect('order_all')
+from order.models import *
+def order_shipped(request, order_id):
+    if request.user.is_superuser:
+        
+        order = get_object_or_404(Order, id=order_id)
+        
+        order.order_status = 'Shipped'
+        print(order.order_status)
+        order.shipping_date = timezone.now()
+        order.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return render(request, 'home.html')
+    
+def admin_order_cancel(request, order_id):
+   
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, id=order_id)
+        user = order.user
+        print("hyyyyyyyyyyyyyyy")
+        if order.order_status != 'Delivered' and order.order_status != 'Returned'and order.order_status !='Cancelled' and order.order_status != 'Requested for return ':
+            print("hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
+            order_items = OrderItem.objects.filter(order=order)
+            for item in order_items:
+                variant = item.product
+                variant.stock += item.quantity
+                variant.save()
+            if order.payment_method in ['RAZORPAY']:
+                user_wallet = Wallet.objects.get(user=user)
+                # Refund the amount to the user's wallet
+                refund_amount = order.total_price # Assuming you want to refund the full amount
+                print('======================================>',refund_amount)
+
+                user_wallet.balance += Decimal(refund_amount)
+                user_wallet.save()
+                transaction_type = 'Cancelled'
+                WalletTransaction.objects.create(wallet=user_wallet, amount=refund_amount, order_id=order, transaction_type=transaction_type)
+
+            if order.payment_status=='Pending':
+                order.payment_status='No payment'
+            else:
+                order.payment_status='Refunded'
+            order.order_status='Cancelled'
+            Order.cancelled_date=timezone.now()
+            order.save()
+
+            return redirect(request.META.get('HTTP_REFERER'))
+    else:
+        return render(request, 'home.html')
+    
+def order_deliverd(request, order_id):
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, id=order_id)
+        print(order)
+        # Make sure the order is in the 'SHIPPED' status before marking it as 'DELIVERED'
+        if order.order_status == 'Shipped':
+            order.order_status = 'Delivered'
+            order.delivery_date=timezone.now()
+            order.return_period_expired=timezone.now()+timezone.timedelta(days=5)
+
+        if order.payment_status=='Pending':
+            order.payment_status='Paid'
+        order.save()
+        print(order.return_period_expired)
+
+        return redirect(request.META.get('HTTP_REFERER'))
+
 
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Variant, Product, Quality

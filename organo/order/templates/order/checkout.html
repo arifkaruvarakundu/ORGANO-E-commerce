@@ -148,9 +148,9 @@ document.getElementById('rzp-button1').onclick = function(e) {
                 "image": "{% static 'user/img/logo1.png' %}",
                 "order_id": response.order_id,                 
                 "handler": function (response) {
-                    alert(response.razorpay_payment_id);
-                    alert(response.razorpay_order_id);
-                    alert(response.razorpay_signature);
+                    // alert(response.razorpay_payment_id);
+                    // alert(response.razorpay_order_id);
+                    // alert(response.razorpay_signature);
                     var paymentId = response.razorpay_payment_id;
                     var orderId = response.razorpay_order_id;
                     var signature = response.razorpay_signature;
@@ -195,11 +195,11 @@ document.getElementById('rzp-button1').onclick = function(e) {
 
             // Handle the payment response
             rzp1.on('payment.failed', function(response) {
-                alert(response.error.code);
-                alert(response.error.description);
-                alert(response.error.source);
-                alert(response.error.step);
-                alert(response.error.reason);
+                // alert(response.error.code);
+                // alert(response.error.description);
+                // alert(response.error.source);
+                // alert(response.error.step);
+                // alert(response.error.reason);
                 alert(response.error.metadata.order_id);
                 alert(response.error.metadata.payment_id);
             });

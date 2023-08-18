@@ -30,15 +30,13 @@ Orders
         <td class="text-nowrap">{{order.order_date}}</td>
         <td class="text-nowrap">{{order.payment_status}}</td>
         <td class="text-nowrap">{{order.delivery_date}}</td>
-        <td class="text-nowrap">{{order.payment_status}}</td>
+        <td class="text-nowrap">{{order.order_status}}</td>
         <td>
           <a class="btn btn-dark" href="{% url 'order_views' order.id %}">ORDER VIEWS</a>
-          <a class="btn btn-light" href="{% url 'cancel_order' order.id %}">ORDER CANCEL</a>
         </td>
       </tr>
       {% endfor %}
     </tbody>
-    
   </table>
 </div>
 {% endblock %}

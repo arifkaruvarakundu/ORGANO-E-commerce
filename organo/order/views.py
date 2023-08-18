@@ -54,7 +54,7 @@ def online_payment_order(request, userId):
             address=user_adds,
             total_price=total_price,
             payment_status='PAID',
-            payment_method='PAYPAL',
+            payment_method='RAZORPAY',
             razor_pay_payment_id=payment_id,
             razor_pay_payment_signature=signature,
             razor_pay_order_id = orderId,
@@ -205,7 +205,7 @@ def order_cancel(request, order_id):
             variant = item.product
             variant.stock = variant.stock + item.quantity
             variant.save()
-
+        
 
         order.payment_status = 'CANCELLED'
         order.save()
