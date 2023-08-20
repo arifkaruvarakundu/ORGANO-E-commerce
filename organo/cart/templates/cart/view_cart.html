@@ -11,6 +11,15 @@
       </div>
     {% endfor %}
   {% endif %}
+  {% if empty_cart %}
+    <script>
+        Swal.fire({
+            icon: 'info',
+            title: 'Empty Cart',
+            text: 'Sorry, your cart is empty.',
+        });
+    </script>
+{% else %}
   
   <!-- Shopping Cart -->
   <div class="bg0 p-t-75 p-b-85">
@@ -105,7 +114,7 @@
             <!-- coupon_applied_total -->
             <div class="mt-4">
               {% if total_price == 0 %}
-              <a href="" class="btn btn-lg btn-primary btn-block">Shop more</a>
+              <a href="{% url 'shop' %}" class="btn btn-lg btn-primary btn-block">Shop more</a>
               {% else %}
               <a href="{% url 'address' %}" class="btn btn-lg btn-success btn-block" >Proceed to Checkout</a>
               {% endif %}
@@ -115,6 +124,7 @@
       </div>
     </div>
   </div>
+  {% endif %}
   
 
 

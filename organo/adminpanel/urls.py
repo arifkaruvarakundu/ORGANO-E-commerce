@@ -39,6 +39,7 @@ urlpatterns = [
     path('order_deliverd/<int:order_id>', views.order_deliverd, name='order_deliverd'),
     
     
+    
 
 ]
 # path('products/', views.products, name='products'),

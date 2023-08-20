@@ -142,3 +142,8 @@ def delete_address(request, address_id):
         # Redirect to the address list or any other desired page
         return redirect('address')
     
+def error_404_view(request, exception):
+    return render(request, '404/error_404.html', status=404)
+
+def error_500_view(request):
+    return render(request, '500/error_500.html', status=500)

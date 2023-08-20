@@ -18,11 +18,12 @@ from .models import *
 import datetime
 import pyotp
 from django.contrib.sessions.backends.db import SessionStore
-
+from django.views.decorators.cache import cache_control
 
 
 
 # # Create your views here.
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def home(request):
     # Fetch featured products from the database
     categories = Category.objects.all()
@@ -47,52 +48,55 @@ def home(request):
 
 
 from django.contrib.auth import authenticate
-
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)
 def signin(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('pass1')
+    if not request.user.is_authenticated:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('pass1')
 
-        user = authenticate(username=username, password=password)
+            user = authenticate(username=username, password=password)
 
-        if user is not None:
+            if user is not None:
 
-            # Generate OTP secret
-            otp_secret = pyotp.random_base32()
+                # Generate OTP secret
+                otp_secret = pyotp.random_base32()
 
-            # Create a PyOTP object
-            totp = pyotp.TOTP(otp_secret)
+                # Create a PyOTP object
+                totp = pyotp.TOTP(otp_secret)
 
-            # Get the current OTP
-            otp = totp.now()
+                # Get the current OTP
+                otp = totp.now()
 
-            # setting timer
-            expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=5)
+                # setting timer
+                expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=5)
 
-            # Store OTP in the session
-            session = SessionStore(request.session.session_key)
-            request.session['otp'] = otp
-            request.session['user_id'] = user.id
-            request.session['otp_expiration_time'] = expiration_time.timestamp()
+                # Store OTP in the session
+                session = SessionStore(request.session.session_key)
+                request.session['otp'] = otp
+                request.session['user_id'] = user.id
+                request.session['otp_expiration_time'] = expiration_time.timestamp()
 
-            # Compose the email content
-            subject = 'OTP verification'
-            message = f'Hello {user.username},\n\n' \
-                      f'Please use the following OTP to verify your email: {otp}\n\n' \
-                      f'Thank you!'
-            from_email = settings.EMAIL_HOST_USER
-            recipient_list = [user.email]
+                # Compose the email content
+                subject = 'OTP verification'
+                message = f'Hello {user.username},\n\n' \
+                        f'Please use the following OTP to verify your email: {otp}\n\n' \
+                        f'Thank you!'
+                from_email = settings.EMAIL_HOST_USER
+                recipient_list = [user.email]
 
-            # Send the email
-            send_mail(subject, message, from_email, recipient_list)
+                # Send the email
+                send_mail(subject, message, from_email, recipient_list)
 
-            return redirect('otp_login')
+                return redirect('otp_login')
 
-        else:
-            messages.error(request, 'wrong username or password')
-            return redirect('signin')
+            else:
+                messages.error(request, 'wrong username or password')
+                return redirect('signin')
 
-    return render(request, 'ecommerce/signin.html')
+        return render(request, 'ecommerce/signin.html')
+    else:
+        return render(request, 'ecommerce/home.html')
 
 def otp_login(request):
     if request.method == 'POST':
@@ -135,7 +139,7 @@ def otp_login(request):
         return render(request, 'ecommerce/otp_login.html')
 
 
-    
+@cache_control(no_cache=True, must_revalidate=True, no_store=True)    
 def signup(request):
     if request.method == "POST":
             username = request.POST['username']
@@ -213,7 +217,7 @@ def signup(request):
     return render(request, 'ecommerce/signup.html')
 
 
-
+   
 def logout_user(request):
     if request.user.is_authenticated:
         logout(request)
@@ -370,3 +374,9 @@ def autocomplete(request):
             print(f"Error occurred while retrieving autocomplete data: {str(e)}")
 
     return render(request, 'ecommerce/home.html')
+
+def error_404_view(request, exception):
+    return render(request, '404/error_404.html', status=404)
+
+def error_500_view(request):
+    return render(request, '500/error_500.html', status=500)

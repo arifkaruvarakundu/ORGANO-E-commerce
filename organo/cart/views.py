@@ -10,7 +10,6 @@ from django.contrib import messages
 # Create your views here.
 
 @login_required
-
 def add_to_cart(request, variant_id):
     variant = get_object_or_404(Variant, pk=variant_id)
 
@@ -44,71 +43,78 @@ def add_to_cart(request, variant_id):
 #-------------------------------------------------------------------------------------------------------------
 from django.core.exceptions import ValidationError
 def view_cart(request):
-    cart_obj = Cart.objects.get(is_paid=False, user=request.user)
+    try:
+        cart_obj = Cart.objects.get(is_paid=False, user=request.user)
 
-    cart_items = cart_obj.cartitems_set.all().order_by('product__title')
-    
-    total_price = 0
-    for item in cart_items:
-        try:
-            # Check if the product is out of stock
-            if item.product.stock < 1:
-                continue  # Skip this item if it is out of stock
+        cart_items = cart_obj.cartitems_set.all().order_by('product__title')
+        
+        total_price = 0
+        for item in cart_items:
+            try:
+                # Check if the product is out of stock
+                if item.product.stock < 1:
+                    continue  # Skip this item if it is out of stock
+                
+                # Update the price of each item based on the quantity
+                item.price = item.product.price * item.quantity
+                item.save()
+
+                # Add the updated item price to the total price
+                total_price += item.price
+            except ValidationError:
+                # Handle any potential validation errors related to the product or item
+                pass
+
+        coupon = None 
+        
+
+        if request.method=='POST':
+            coupon=request.POST.get('coupon')
+            coupon_obj=Coupon.objects.filter(coupon_code__icontains=coupon)
+            if not coupon_obj.exists():
+                messages.warning(request,'Invalid coupon')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+            if cart_obj.coupon:
+                messages.warning(request,'Coupon already exists.')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
             
-            # Update the price of each item based on the quantity
-            item.price = item.product.price * item.quantity
-            item.save()
-
-            # Add the updated item price to the total price
-            total_price += item.price
-        except ValidationError:
-            # Handle any potential validation errors related to the product or item
-            pass
-
-    coupon = None 
-    
-
-    if request.method=='POST':
-        coupon=request.POST.get('coupon')
-        coupon_obj=Coupon.objects.filter(coupon_code__icontains=coupon)
-        if not coupon_obj.exists():
-            messages.warning(request,'Invalid coupon')
+            if cart_obj.get_total_price() < coupon_obj[0].minimum_amount:
+                messages.warning(request,f'Amount should be greaerthan {coupon_obj[0].minimum_amount}')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            
+            if coupon_obj[0].is_expired:
+                messages.warning(request,f'Coupon expired')
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            
+            cart_obj.coupon=coupon_obj[0]
+            cart_obj.save()
+            messages.success(request,'Coupon applied')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-
+        
         if cart_obj.coupon:
-            messages.warning(request,'Coupon already exists.')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+            coupon = cart_obj.coupon
+            discount_price = coupon.discount_price
+            
+        else:
+            discount_price = 0
         
-        if cart_obj.get_total_price() < coupon_obj[0].minimum_amount:
-            messages.warning(request,f'Amount should be greaerthan {coupon_obj[0].minimum_amount}')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-        if coupon_obj[0].is_expired:
-            messages.warning(request,f'Coupon expired')
-            return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-        
-        cart_obj.coupon=coupon_obj[0]
-        cart_obj.save()
-        messages.success(request,'Coupon applied')
-        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
-    
-    if cart_obj.coupon:
-        coupon = cart_obj.coupon
-        discount_price = coupon.discount_price
-        
-    else:
-        discount_price = 0
-    
-    final_price=total_price-discount_price
-    context = {
-            'cart': cart_obj,
-            'total_price': total_price,
-            'coupon':coupon,
-            'discount_price':discount_price,
-            'final_price':final_price,
+        final_price=total_price-discount_price
+        context = {
+                'cart': cart_obj,
+                'total_price': total_price,
+                'coupon':coupon,
+                'discount_price':discount_price,
+                'final_price':final_price,
 
 
-            }
+                }
+    except Cart.DoesNotExist:
+        # Cart is empty, set the empty_cart flag
+        context = {
+            'empty_cart': True,
+        }
+
        
     return render(request, 'cart/view_cart.html', context)
 
@@ -200,7 +206,25 @@ def remove_wish(request, variant_id):
 
 
 def view_wishlist(request):
-    wishlist= get_object_or_404(Wishlist, user=request.user)
-    user_products = CartItems.objects.filter(cart__user= request.user).values_list('product__id' , flat=True)
-    items= WishlistItem.objects.filter( wishlist= wishlist)
-    return render(request, 'cart/view_wishlist.html', {'wishlist': wishlist, 'items': items, 'user_products':user_products})
+    try:
+        wishlist = Wishlist.objects.get(user=request.user)
+        items = WishlistItem.objects.filter(wishlist=wishlist)
+        user_products = CartItems.objects.filter(cart__user=request.user).values_list('product__id', flat=True)
+
+        context = {
+            'wishlist': wishlist,
+            'items': items,
+            'user_products': user_products,
+        }
+
+        return render(request, 'cart/view_wishlist.html', context)
+        
+    except Wishlist.DoesNotExist:
+        # Redirect to home page with empty wishlist alert
+        return render(request, 'cart/view_wishlist.html', {'empty_wishlist': True})
+    
+def error_404_view(request, exception):
+    return render(request, '404/error_404.html', status=404)
+
+def error_500_view(request):
+    return render(request, '500/error_500.html', status=500)
