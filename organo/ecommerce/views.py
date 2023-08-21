@@ -375,8 +375,3 @@ def autocomplete(request):
 
     return render(request, 'ecommerce/home.html')
 
-def error_404_view(request, exception):
-    return render(request, '404/error_404.html', status=404)
-
-def error_500_view(request):
-    return render(request, '500/error_500.html', status=500)

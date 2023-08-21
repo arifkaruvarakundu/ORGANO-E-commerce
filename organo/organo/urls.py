@@ -1,23 +1,18 @@
 from django.contrib import admin
+from django.shortcuts import render
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from ecommerce.views import error_404_view, error_500_view
-from adminpanel.views import error_404_view, error_500_view
-from user.views import error_404_view, error_500_view
-from cart.views import error_404_view, error_500_view
-from order.views import error_404_view, error_500_view
 
-handler404 = 'ecommerce.views.error_404_view'
-handler500 = 'ecommerce.views.error_500_view'
-handler404 = 'adminpanel.views.error_404_view'
-handler500 = 'adminpanel.views.error_500_view'
-handler404 = 'user.views.error_404_view'
-handler500 = 'user.views.error_500_view'
-handler404 = 'cart.views.error_404_view'
-handler500 = 'cart.views.error_500_view'
-handler404 = 'order.views.error_404_view'
-handler500 = 'order.views.error_500_view'
+
+def custom_page_not_found_view(request, exception):
+    return render(request, '404/error_404.html', status=404)
+
+def custom_server_error_view(request):
+    return render(request, '500/error_500.html', status=500)
+
+handler404 = custom_page_not_found_view
+handler500 = custom_server_error_view
 
 urlpatterns =[
     path('admin/', admin.site.urls),

@@ -34,9 +34,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-dhj0jexrv31s@+67x)9tb#8b_@7)ifuv_)o)80+y(a5b+6xcen'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['54.146.187.216','0.0.0.0','127.0.0.1']
+ALLOWED_HOSTS = ['54.146.187.216','0.0.0.0','127.0.0.1','localhost']
 
 
 RAZOR_KEY_ID = 'rzp_test_xADEzwG15zURhy'
@@ -74,10 +74,10 @@ MIDDLEWARE = [
      
 ]
 CSRF_TRUSTED_ORIGINS = [
-    "http://13.50.235.108",]
-
-CSRF_TRUSTED_ORIGINS = [
-    "http://13.50.235.108",]
+    "http://54.146.187.216",
+    "http://0.0.0.0:9090",
+    # Add more trusted origins here
+]
 
 ROOT_URLCONF = 'organo.urls'
 

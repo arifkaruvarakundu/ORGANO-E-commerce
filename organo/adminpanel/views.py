@@ -43,30 +43,33 @@ def admin_page(request):
     
 @cache_control(no_cache=True, must_revalidate=True, no_store=True)     
 def products(request):
-    product = Product.objects.all()
-    product_count = product.count()
-    customer = User.objects.filter(groups=2)
-    customer_count = customer.count()
-    order = Order.objects.all()
-    order_count = order.count()
-    product_quantity = Product.objects.filter()
-    if request.method == 'POST':
-        form = ProductForm(request.POST)
-        if form.is_valid():
-            form.save()
-            product_name = form.cleaned_data.get('name')
-            messages.success(request, f'{product.name} has been added')
-            return redirect('add_products')
+    if request.user.is_superuser:
+        product = Product.objects.all()
+        product_count = product.count()
+        customer = User.objects.filter(groups=2)
+        customer_count = customer.count()
+        order = Order.objects.all()
+        order_count = order.count()
+        product_quantity = Product.objects.filter()
+        if request.method == 'POST':
+            form = ProductForm(request.POST)
+            if form.is_valid():
+                form.save()
+                product_name = form.cleaned_data.get('name')
+                messages.success(request, f'{product.name} has been added')
+                return redirect('add_products')
+        else:
+            form = ProductForm()
+        context = {
+            'product': product,
+            'form': form,
+            'customer_count': customer_count,
+            'product_count': product_count,
+            'order_count': order_count,
+        }
+        return render(request, 'adminpanel/add_products.html', context)
     else:
-        form = ProductForm()
-    context = {
-        'product': product,
-        'form': form,
-        'customer_count': customer_count,
-        'product_count': product_count,
-        'order_count': order_count,
-    }
-    return render(request, 'adminpanel/add_products.html', context)
+        return redirect('home')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def product_view(request, product_id):
     if request.user.is_superuser:
@@ -78,7 +81,8 @@ def product_view(request, product_id):
         }
 
         return render(request, 'adminpanel/product_view.html', context)
-
+    else:
+        return redirect('home')
 
 
 from django.shortcuts import render, redirect
@@ -126,7 +130,8 @@ def add_product(request):
 
             # Render the add product page
             return render(request, 'adminpanel/add_product.html', context)
-    
+    else:
+        return redirect('home')
 
 from django.shortcuts import render
 from django.urls import reverse
@@ -138,6 +143,8 @@ def products_list(request):
         context = {'products': products}
 
         return render(request, 'adminpanel/products_list.html', context)
+    else:
+        return redirect('home')
 
 
 
@@ -179,6 +186,8 @@ def edit_product(request, product_id):
 
             # Render the edit product page
             return render(request, 'adminpanel/edit_product.html', context)
+    else:
+        return redirect('home')
 
 def delete_product(request,product_id, active):
     product = Product.objects.get(id=product_id)
@@ -199,7 +208,8 @@ def add_category(request):
         else:
             form = CategoryForm()
         return render(request, 'adminpanel/add_category.html', {'form': form})
-
+    else:
+        return redirect('home')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def category_list(request):
     if request.user.is_superuser:
@@ -211,6 +221,8 @@ def category_list(request):
         }
 
         return render(request, 'adminpanel/category_list.html', context)
+    else:
+        return redirect('home')
 
 from django.http import HttpResponse, HttpResponseBadRequest
 def delete_category(request, category_id):
@@ -246,7 +258,7 @@ def edit_category(request, category_id):
             form = CategoryForm(instance=category)
 
         return render(request, 'adminpanel/edit_category.html', {'form': form, 'category': category})
-
+    return redirect('home')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def user(request):
     if request.user.is_superuser:
@@ -255,7 +267,8 @@ def user(request):
             'users':users
         }
         return render(request,'adminpanel/user_list.html',context)
-
+    else:
+        return redirect('home')
 def block_user(request,user_id):
     user=User.objects.get(id=user_id)
     user.is_active=False
@@ -282,7 +295,8 @@ def order_all(request):
             'orders':orders
         }
         return render(request,'adminpanel/all_orders.html',context)
-
+    else:
+        return redirect('home')
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def order_views(request,order_id):
     if request.user.is_superuser:
@@ -294,6 +308,8 @@ def order_views(request,order_id):
             'view_order':view_order
         }
         return render(request,'adminpanel/order_views.html',context)
+    else:
+        return redirect('home')
 
 from django.shortcuts import redirect, get_object_or_404
 def cancel_order(request, order_id):
@@ -418,7 +434,8 @@ def add_variant(request, product_id):
             
 
             return redirect('product_view', product_id=product_id)  # Redirect to the admin page after successful submission
-
+    else:
+        return redirect('home')
     # Retrieve products and qualities for the form
     product = Product.objects.all()
     qualities = Quality.objects.all()
@@ -438,7 +455,9 @@ def variant_list(request):
         context = {'variants': variants}
     
 
-    return render(request, 'adminpanel/variant_list.html', context)
+        return render(request, 'adminpanel/variant_list.html', context)
+    else:
+        return redirect('home')
 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def variant_edit(request, variant_id):
@@ -478,7 +497,9 @@ def variant_edit(request, variant_id):
         }
 
         return render(request, 'adminpanel/variant_edit.html', context)
-
+    else:
+        return redirect('home')
+    
 def enable_product(request, product_id):
     product = Product.objects.get(id=product_id)
     product.is_active = True
@@ -498,10 +519,6 @@ def disable_product(request, product_id):
 #------------------------------------Dashboard-----------------------------------#
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def dashboard(request):
-    if request is None:
-        # Handle the situation where request is None
-        return HttpResponse("Request is None")
-    if request.user.is_authenticated:
         if request.user.is_superuser:
             if request.method == 'GET':
                 start_date = request.GET.get('start_date')
@@ -611,7 +628,8 @@ def dashboard(request):
                     return render(request, 'adminpanel/admin_dashboard.html', context)
             
             return HttpResponseBadRequest("Invalid request method.")
-
+        else:
+            return redirect('home') 
 @cache_control(no_cache=True, must_revalidate=True, no_store=True) 
 def pdf_view(request):
 
@@ -909,7 +927,3 @@ def order_deliverd(request, order_id):
 
         return redirect(request.META.get('HTTP_REFERER'))
 
-def error_404_view(request, exception):
-    return render(request, '404/error_404.html', status=404)
-def error_500_view(request):
-    return render(request, '500/error_500.html', status=500)

@@ -12,32 +12,32 @@ from django.conf import settings
 from django.http import JsonResponse
 from cart.models import Coupon
 from cart.forms import CouponForm
+
 # Create your views here.
 def checkout(request, address_id):
-    user_add = get_object_or_404(UserAddress, id=address_id, user=request.user)
-    carts = get_object_or_404(Cart, user=request.user)
+    if request.user.is_authenticated:
+        user_add = get_object_or_404(UserAddress, id=address_id, user=request.user)
+        carts = get_object_or_404(Cart, user=request.user)
 
-    form = CouponForm(request.POST or None)  # Create form instance with request data (if any)
-    final_price = carts.get_total_price()
-    if form.is_valid():
-        code = form.cleaned_data['code']
-        try:
-            coupon = Coupon.objects.get(
-                code=code,
-                valid_from__lte=timezone.now(),
-                valid_to__gte=timezone.now(),
-                active=True
-            )
-            request.session['coupon_id'] = coupon.id
-            return redirect('checkout')  # Redirect to your checkout view
-        except Coupon.DoesNotExist:
-            form.add_error('code', 'Invalid coupon code.')
-
-     
+        form = CouponForm(request.POST or None)  # Create form instance with request data (if any)
+        final_price = carts.get_total_price()
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            try:
+                coupon = Coupon.objects.get(
+                    code=code,
+                    valid_from__lte=timezone.now(),
+                    valid_to__gte=timezone.now(),
+                    active=True
+                )
+                request.session['coupon_id'] = coupon.id
+                return redirect('checkout')  # Redirect to your checkout view
+            except Coupon.DoesNotExist:
+                form.add_error('code', 'Invalid coupon code.')
+        return render(request, "order/checkout.html", {"user_add": user_add, "carts": carts, 'form': form, 'final_price':final_price})
+    else:
+        return redirect('home')
     
-    return render(request, "order/checkout.html", {"user_add": user_add, "carts": carts, 'form': form, 'final_price':final_price})
-
-
 def online_payment_order(request, userId):
     if request.method == 'POST':
         payment_id = request.POST.getlist('payment_id')[0]
@@ -123,62 +123,68 @@ def online_payment_order(request, userId):
 #      return render(request,"order/order_success.html",context)
 
 
-def place_order(request, userId):   
-    user_adds = UserAddress.objects.get(id=userId, user=request.user)
-    cartss = Cart.objects.get(user=request.user)
-    items = CartItems.objects.filter(cart=cartss)
-    total_price = sum(item.price * item.quantity for item in items)
-    order = Order.objects.create(
-        user=request.user,
-        address=user_adds,
-        total_price=total_price,
-        payment_status='PENDING',
-        payment_method='CASH_ON_DELIVERY',
-    )
-
-    for cart_item in items:
-        OrderItem.objects.create(
-            order=order,
-            product=cart_item.product,
-            price=cart_item.price,
-            quantity=cart_item.quantity
+def place_order(request, userId): 
+    if request.user.is_authenticated:  
+        user_adds = UserAddress.objects.get(id=userId, user=request.user)
+        cartss = Cart.objects.get(user=request.user)
+        items = CartItems.objects.filter(cart=cartss)
+        total_price = sum(item.price * item.quantity for item in items)
+        order = Order.objects.create(
+            user=request.user,
+            address=user_adds,
+            total_price=total_price,
+            payment_status='PENDING',
+            payment_method='CASH_ON_DELIVERY',
         )
-        variant = cart_item.product  # Access the product, not the variant directly
-        variant.stock -= cart_item.quantity
-        variant.save()
 
-    # Fetch the updated order instance
-   
-    items.delete()
-    context = {
-        'items': OrderItem.objects.filter(order=order),
-        'total_price': total_price,
-        'order': order
-    }
-    return render(request, "order/order_success.html", context)
+        for cart_item in items:
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                price=cart_item.price,
+                quantity=cart_item.quantity
+            )
+            variant = cart_item.product  # Access the product, not the variant directly
+            variant.stock -= cart_item.quantity
+            variant.save()
 
-
+        # Fetch the updated order instance
+    
+        items.delete()
+        context = {
+            'items': OrderItem.objects.filter(order=order),
+            'total_price': total_price,
+            'order': order
+        }
+        return render(request, "order/order_success.html", context)
+    else:
+        return redirect('home')
 
 def ordertable(request):
-    orders = Order.objects.filter(user=request.user)
+    if request.user.is_authenticated:
+        orders = Order.objects.filter(user=request.user)
 
-    context = {
-        'orders':orders
-    }
-    return render(request,'order/ordertable.html',context)
+        context = {
+            'orders':orders
+        }
+        return render(request,'order/ordertable.html',context)
+    else:
+        return redirect('home')
 
 def order_view(request,order_id):
-    orders = Order.objects.get(id=order_id)
-    
-    view_order = OrderItem.objects.filter(order=orders)
-    
-    context ={
-        'orders':orders,
-        'view_order':view_order
-    }
+    if request.user.is_authenticated:
+        orders = Order.objects.get(id=order_id)
+        
+        view_order = OrderItem.objects.filter(order=orders)
+        
+        context ={
+            'orders':orders,
+            'view_order':view_order
+        }
 
-    return render(request,"order/order_view.html",context)
-
+        return render(request,"order/order_view.html",context)
+    else:
+        return redirect('home')
 def cancel_orders(request,order_id):
     order = get_object_or_404(Order, id=order_id)
     if order.payment_status != 'PAID' and order.payment_status != 'CANCELLED':
@@ -247,41 +253,42 @@ def initiate_payment(request):
 
 
 def order_success(request,orderId):
-    orders = Order.objects.get(id=orderId)
-    items = OrderItem.objects.filter(order=orders)
-    total_price = sum(item.price * item.quantity for item in items)
+    if request.user.is_authenticated:
+        orders = Order.objects.get(id=orderId)
+        items = OrderItem.objects.filter(order=orders)
+        total_price = sum(item.price * item.quantity for item in items)
 
-    context = {
-        'orders':orders,
-        'items':items,
-        'total_price':total_price
-    }
+        context = {
+            'orders':orders,
+            'items':items,
+            'total_price':total_price
+        }
 
 
-    return render(request,"order/order_success.html",context)
+        return render(request,"order/order_success.html",context)
+    else:
+        return redirect('home')
 
 def user_view_wallet(request):
-    user = request.user
-    try: 
-        wallet = Wallet.objects.get(user=user)
-    except Wallet.DoesNotExist:
-        # If the wallet doesn't exist, create one for the user
-        wallet = Wallet.objects.create(user=user, balance=0)
-        transactions = [] 
- 
+    if request.user.is_authenticated:
+        user = request.user
+        try: 
+            wallet = Wallet.objects.get(user=user)
+        except Wallet.DoesNotExist:
+            # If the wallet doesn't exist, create one for the user
+            wallet = Wallet.objects.create(user=user, balance=0)
+            transactions = [] 
+    
 
-    # Fetch the transaction history for the user's wallet
-    transactions = WalletTransaction.objects.filter(wallet=wallet).order_by('-date') 
+        # Fetch the transaction history for the user's wallet
+        transactions = WalletTransaction.objects.filter(wallet=wallet).order_by('-date') 
 
-    context = {
-        'wallet':wallet,
-        'transactions':transactions
-    }
+        context = {
+            'wallet':wallet,
+            'transactions':transactions
+        }
 
-    return render(request, 'order/view_wallet.html', context)
+        return render(request, 'order/view_wallet.html', context)
+    else:
+        return redirect('home')
 
-def error_404_view(request, exception):
-    return render(request, '404/error_404.html', status=404)
-
-def error_500_view(request):
-    return render(request, '500/error_500.html', status=500)
